@@ -12,7 +12,7 @@ window.VidaSegura.Stats = (function () {
     const GPS = () => window.VidaSegura.GPS;
 
     let score = 0;
-    let breakdown = [];
+    let var newBreakdown = [];
 
     // ── Init ──────────────────────────────────────────────────────────────
     function init() {
@@ -29,7 +29,7 @@ window.VidaSegura.Stats = (function () {
             if (!user) user = {};
 
             score = 0;
-            breakdown = [];
+            var newBreakdown = [];
 
             // 1. Perfil completo (20 pts)
             var profileComplete =
@@ -38,7 +38,7 @@ window.VidaSegura.Stats = (function () {
                 !!user.bloodType &&
                 !!user.birthdate;
             var profilePts = profileComplete ? 20 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'Perfil completo',
                 points: profilePts,
                 maxPoints: 20,
@@ -49,7 +49,7 @@ window.VidaSegura.Stats = (function () {
             // 2. Foto de perfil (10 pts)
             var hasPhoto = !!user.photo;
             var photoPts = hasPhoto ? 10 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'Foto de perfil',
                 points: photoPts,
                 maxPoints: 10,
@@ -66,7 +66,7 @@ window.VidaSegura.Stats = (function () {
                     !!(user.emergencyContacts && user.emergencyContacts[0]);
             }
             var contact1Pts = hasContact1 ? 15 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'Contacto de emergencia',
                 points: contact1Pts,
                 maxPoints: 15,
@@ -83,7 +83,7 @@ window.VidaSegura.Stats = (function () {
                     !!(user.emergencyContacts && user.emergencyContacts[1]);
             }
             var contact2Pts = hasContact2 ? 5 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'Segundo contacto',
                 points: contact2Pts,
                 maxPoints: 5,
@@ -103,7 +103,7 @@ window.VidaSegura.Stats = (function () {
                 }
             } catch (_) {}
             var gpsPts = gpsActive ? 20 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'GPS activo',
                 points: gpsPts,
                 maxPoints: 20,
@@ -118,7 +118,7 @@ window.VidaSegura.Stats = (function () {
                 qrShared = qrSetting === 'true' || qrSetting === true;
             } catch (_) {}
             var qrPts = qrShared ? 10 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'QR compartido',
                 points: qrPts,
                 maxPoints: 10,
@@ -133,7 +133,7 @@ window.VidaSegura.Stats = (function () {
                 hasCircle = Array.isArray(circles) && circles.length > 0;
             } catch (_) {}
             var circlePts = hasCircle ? 15 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'Círculo familiar',
                 points: circlePts,
                 maxPoints: 15,
@@ -149,7 +149,7 @@ window.VidaSegura.Stats = (function () {
                     Notification.permission === 'granted';
             } catch (_) {}
             var notifPts = notifActive ? 5 : 0;
-            breakdown.push({
+            newBreakdown.push({
                 label: 'Notificaciones activas',
                 points: notifPts,
                 maxPoints: 5,
@@ -158,7 +158,7 @@ window.VidaSegura.Stats = (function () {
             });
 
             // Total
-            score = breakdown.reduce(function (sum, item) {
+            breakdown = newBreakdown; score = breakdown.reduce(function (sum, item) {
                 return sum + item.points;
             }, 0);
 
