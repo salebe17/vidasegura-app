@@ -362,7 +362,11 @@ window.VidaSegura.Map = (function () {
       }
 
       var userMarker = L.marker([pos.lat, pos.lng], { icon: pulsingIcon }).addTo(map);
-      userMarker.bindPopup('Tu ubicación actual');
+      var historyBtnHtml = '';
+      if (typeof firebaseAuth !== 'undefined' && firebaseAuth.currentUser) {
+        historyBtnHtml = '<br><br><button class="btn btn-sm btn-primary" style="width:100%; margin-top:5px; padding: 4px;" onclick="window.VidaSegura.Family.showHistory(\'' + firebaseAuth.currentUser.uid + '\')">Ver mi historial</button>';
+      }
+      userMarker.bindPopup('<div style="text-align:center;"><strong>Tu ubicación actual</strong>' + historyBtnHtml + '</div>');
       markers['user-location'] = userMarker;
 
       // Accuracy circle
