@@ -1,0 +1,202 @@
+[
+  {
+    "id": 1,
+    "name": "Hospital Universitario de Caracas",
+    "type": "hospital",
+    "state": "Distrito Capital",
+    "city": "Caracas",
+    "lat": 10.4961,
+    "lng": -66.8983,
+    "phone": "+58-212-6063111"
+  },
+  {
+    "id": 2,
+    "name": "Hospital de Clínicas Caracas",
+    "type": "hospital",
+    "state": "Distrito Capital",
+    "city": "Caracas",
+    "lat": 10.4935,
+    "lng": -66.8561,
+    "phone": "+58-212-5084000"
+  },
+  {
+    "id": 3,
+    "name": "Hospital General del Oeste Dr. José Gregorio Hernández",
+    "type": "hospital",
+    "state": "Distrito Capital",
+    "city": "Caracas",
+    "lat": 10.4750,
+    "lng": -66.9560,
+    "phone": "+58-212-4710111"
+  },
+  {
+    "id": 4,
+    "name": "Hospital de Niños J.M. de los Ríos",
+    "type": "hospital",
+    "state": "Distrito Capital",
+    "city": "Caracas",
+    "lat": 10.5060,
+    "lng": -66.8910,
+    "phone": "+58-212-5744111"
+  },
+  {
+    "id": 5,
+    "name": "Hospital Universitario de Maracaibo",
+    "type": "hospital",
+    "state": "Zulia",
+    "city": "Maracaibo",
+    "lat": 10.6427,
+    "lng": -71.6125,
+    "phone": "+58-261-7597111"
+  },
+  {
+    "id": 6,
+    "name": "Hospital Central Dr. Urquinaona",
+    "type": "hospital",
+    "state": "Zulia",
+    "city": "Maracaibo",
+    "lat": 10.6480,
+    "lng": -71.6320,
+    "phone": "+58-261-7231564"
+  },
+  {
+    "id": 7,
+    "name": "Hospital Central de Valencia",
+    "type": "hospital",
+    "state": "Carabobo",
+    "city": "Valencia",
+    "lat": 10.1739,
+    "lng": -67.9953,
+    "phone": "+58-241-8576233"
+  },
+  {
+    "id": 8,
+    "name": "Ciudad Hospitalaria Dr. Enrique Tejera",
+    "type": "hospital",
+    "state": "Carabobo",
+    "city": "Valencia",
+    "lat": 10.1810,
+    "lng": -68.0050,
+    "phone": "+58-241-8687411"
+  },
+  {
+    "id": 9,
+    "name": "Hospital Central de San Cristóbal",
+    "type": "hospital",
+    "state": "Táchira",
+    "city": "San Cristóbal",
+    "lat": 7.7694,
+    "lng": -72.2244,
+    "phone": "+58-276-3431211"
+  },
+  {
+    "id": 10,
+    "name": "Hospital Universitario Dr. Luis Razetti",
+    "type": "hospital",
+    "state": "Anzoátegui",
+    "city": "Barcelona",
+    "lat": 10.1300,
+    "lng": -64.6890,
+    "phone": "+58-281-2770421"
+  },
+  {
+    "id": 11,
+    "name": "Hospital Central de Barquisimeto Dr. Antonio María Pineda",
+    "type": "hospital",
+    "state": "Lara",
+    "city": "Barquisimeto",
+    "lat": 10.0640,
+    "lng": -69.3290,
+    "phone": "+58-251-2526461"
+  },
+  {
+    "id": 12,
+    "name": "Hospital Universitario de Los Andes",
+    "type": "hospital",
+    "state": "Mérida",
+    "city": "Mérida",
+    "lat": 8.5870,
+    "lng": -71.1450,
+    "phone": "+58-274-2403011"
+  },
+  {
+    "id": 13,
+    "name": "Hospital Universitario Ruiz y Páez",
+    "type": "hospital",
+    "state": "Bolívar",
+    "city": "Ciudad Bolívar",
+    "lat": 8.1240,
+    "lng": -63.5490,
+    "phone": "+58-285-6325611"
+  },
+  {
+    "id": 14,
+    "name": "Hospital Central de Maturín Dr. Manuel Núñez Tovar",
+    "type": "hospital",
+    "state": "Monagas",
+    "city": "Maturín",
+    "lat": 9.7450,
+    "lng": -63.1770,
+    "phone": "+58-291-6413811"
+  },
+  {
+    "id": 15,
+    "name": "Hospital General de Cumaná Dr. Santos Aníbal Dominicci",
+    "type": "hospital",
+    "state": "Sucre",
+    "city": "Cumaná",
+    "lat": 10.4530,
+    "lng": -64.1750,
+    "phone": "+58-293-4312555"
+  },
+  {
+    "id": 16,
+    "name": "Hospital Universitario Dr. Alfredo Van Grieken",
+    "type": "hospital",
+    "state": "Falcón",
+    "city": "Coro",
+    "lat": 11.4050,
+    "lng": -69.6700,
+    "phone": "+58-268-2513311"
+  },
+  {
+    "id": 17,
+    "name": "Hospital Central de Maracay",
+    "type": "hospital",
+    "state": "Aragua",
+    "city": "Maracay",
+    "lat": 10.2440,
+    "lng": -67.5960,
+    "phone": "+58-243-2461111"
+  },
+  {
+    "id": 18,
+    "name": "Hospital General de San Fernando de Apure Dr. Pablo Acosta Ortiz",
+    "type": "hospital",
+    "state": "Apure",
+    "city": "San Fernando de Apure",
+    "lat": 7.8836,
+    "lng": -67.4730,
+    "phone": "+58-247-3414511"
+  },
+  {
+    "id": 19,
+    "name": "Hospital Universitario de Guanare",
+    "type": "hospital",
+    "state": "Portuguesa",
+    "city": "Guanare",
+    "lat": 9.0470,
+    "lng": -69.7420,
+    "phone": "+58-257-2514111"
+  },
+  {
+    "id": 20,
+    "name": "Hospital Central de Puerto La Cruz Dr. Luis Felipe Guevara Rojas",
+    "type": "hospital",
+    "state": "Anzoátegui",
+    "city": "Puerto La Cruz",
+    "lat": 10.2140,
+    "lng": -64.6360,
+    "phone": "+58-281-2654311"
+  }
+]

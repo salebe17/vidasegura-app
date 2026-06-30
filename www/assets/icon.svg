@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#1A56DB"/>
+    </linearGradient>
+    <linearGradient id="pinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF"/>
+      <stop offset="100%" style="stop-color:#E2E8F0"/>
+    </linearGradient>
+  </defs>
+  <!-- Escudo -->
+  <path d="M50 5 L92 22 C92 22 95 65 50 112 C5 65 8 22 8 22 Z" fill="url(#shieldGrad)" stroke="none"/>
+  <!-- Borde interno del escudo -->
+  <path d="M50 12 L86 27 C86 27 89 63 50 105 C11 63 14 27 14 27 Z" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+  <!-- Pin de ubicación -->
+  <path d="M50 30 C38 30 28 40 28 52 C28 68 50 88 50 88 C50 88 72 68 72 52 C72 40 62 30 50 30 Z" fill="url(#pinGrad)"/>
+  <!-- Círculo interior del pin -->
+  <circle cx="50" cy="52" r="16" fill="white" stroke="#E2E8F0" stroke-width="1"/>
+  <!-- Cruz médica -->
+  <rect x="45" y="42" width="10" height="20" rx="2" fill="#DC2626"/>
+  <rect x="40" y="47" width="20" height="10" rx="2" fill="#DC2626"/>
+</svg>

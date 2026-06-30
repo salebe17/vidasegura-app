@@ -1,0 +1,21 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        "location": {
+          ".read": true,
+          ".write": "$uid === auth.uid"
+        },
+        "locationHistory": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid",
+          ".indexOn": ["timestamp"]
+        },
+        "sosActive": {
+          ".read": true,
+          ".write": "$uid === auth.uid"
+        }
+      }
+    }
+  }
+}

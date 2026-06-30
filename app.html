@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="VidaSegura - Sistema de geolocalización para emergencias en Venezuela. Protege a tu familia con GPS en tiempo real, códigos QR médicos y alertas sísmicas.">
+    <meta name="theme-color" content="#1A56DB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>VidaSegura | Geolocalización de Emergencia</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+    <link rel="apple-touch-icon" href="assets/icon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <svg viewBox="0 0 100 120" class="logo-svg" width="80" height="96">
+                    <defs><linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#1A56DB"/></linearGradient></defs>
+                    <path d="M50 5 L90 25 L90 65 Q90 95 50 115 Q10 95 10 65 L10 25 Z" fill="url(#shieldGrad)" stroke="#60A5FA" stroke-width="1"/>
+                    <path d="M50 75 L38 58 A15 15 0 1 1 62 58 Z" fill="white"/>
+                    <line x1="45" y1="48" x2="55" y2="48" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/>
+                    <line x1="50" y1="43" x2="50" y2="53" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h1 class="loading-title">VidaSegura</h1>
+            <p class="loading-subtitle">Tu seguridad, nuestra prioridad</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toast-container"></div>
+
+    <!-- ===== OFFLINE BANNER ===== -->
+    <div id="offline-banner" class="offline-banner hidden">
+        <span>⚠️ Sin conexión. VidaSegura actualizará tu ubicación cuando regrese el Internet.</span>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div id="modal-overlay" class="hidden">
+        <div id="modal-box" class="glass-card">
+            <h3 id="modal-title"></h3>
+            <div id="modal-body"></div>
+            <div id="modal-actions"></div>
+        </div>
+    </div>
+
+    <!-- ===== PROMINENT DISCLOSURE MODAL ===== -->
+    <div id="modal-disclosure-overlay" class="hidden">
+        <div id="modal-disclosure-box" class="glass-card" style="text-align: center;">
+            <div style="margin-bottom:16px;">
+                <svg viewBox="0 0 100 120" width="60" height="72"><path d="M50 5 L90 25 L90 65 Q90 95 50 115 Q10 95 10 65 L10 25 Z" fill="#1A56DB"/><path d="M50 75 L38 58 A15 15 0 1 1 62 58 Z" fill="white"/><line x1="45" y1="48" x2="55" y2="48" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/><line x1="50" y1="43" x2="50" y2="53" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Permiso de Ubicación</h3>
+            <p style="text-align:left; margin: 16px 0; font-size: 0.95rem; color: var(--text-muted);">
+                <b>VidaSegura recolecta datos de tu ubicación en segundo plano</b> para permitir el rastreo de emergencias familiares en tiempo real y emitir alertas sísmicas precisas, incluso cuando la aplicación está cerrada o no está en uso.
+            </p>
+            <p style="text-align:left; margin: 16px 0; font-size: 0.95rem; color: var(--text-muted);">
+                Estos datos son esenciales para que tu círculo familiar pueda localizarte si presionas el botón SOS.
+            </p>
+            <button id="btn-accept-disclosure" class="btn btn-primary btn-block">Aceptar y Continuar</button>
+        </div>
+    </div>
+
+    <!-- ===== SOS FLOATING BUTTON ===== -->
+    <button id="btn-sos-float" class="hidden" title="Emergencia SOS"><span>SOS</span></button>
+
+    <!-- ===== SOS COUNTDOWN ===== -->
+    <div id="sos-countdown-overlay" class="hidden">
+        <div class="sos-countdown-content">
+            <div id="sos-countdown-number">5</div>
+            <p class="sos-countdown-text">Activando emergencia...</p>
+            <p class="sos-hint">Toca cancelar para detener</p>
+            <button id="btn-sos-countdown-cancel" class="btn btn-ghost">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- ===== MAIN APP ===== -->
+    <main id="app-container">
+
+        <!-- ==================== ONBOARDING ==================== -->
+        <section id="page-onboarding" class="page active">
+            <div class="onboarding-container">
+                <div class="onboarding-slides">
+                    <div class="onboarding-slide active" data-slide="0">
+                        <div class="slide-icon">
+                            <svg viewBox="0 0 100 120" width="100" height="120"><defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#1A56DB"/></linearGradient></defs><path d="M50 5 L90 25 L90 65 Q90 95 50 115 Q10 95 10 65 L10 25 Z" fill="url(#sg2)"/><path d="M50 75 L38 58 A15 15 0 1 1 62 58 Z" fill="white"/><line x1="45" y1="48" x2="55" y2="48" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/><line x1="50" y1="43" x2="50" y2="53" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <h2>Bienvenido a VidaSegura</h2>
+                        <p>Protege a tu familia ante emergencias y desastres naturales en Venezuela</p>
+                    </div>
+                    <div class="onboarding-slide" data-slide="1">
+                        <div class="slide-icon slide-icon-emoji">🛡️</div>
+                        <h2>Funciones Principales</h2>
+                        <ul class="feature-list">
+                            <li>📍 GPS en tiempo real para localizarte</li>
+                            <li>📱 Código QR con tus datos médicos</li>
+                            <li>🔔 Alertas sísmicas automáticas</li>
+                            <li>👨‍👩‍👧‍👦 Red familiar conectada</li>
+                            <li>🆘 Botón SOS de emergencia</li>
+                        </ul>
+                    </div>
+                    <div class="onboarding-slide" data-slide="2">
+                        <div class="slide-icon slide-icon-emoji">📍</div>
+                        <h2>Permisos Necesarios</h2>
+                        <p>Para protegerte necesitamos acceso a:</p>
+                        <ul class="feature-list">
+                            <li>📍 Ubicación — Rastreo GPS</li>
+                            <li>📷 Cámara — Escanear códigos QR</li>
+                            <li>🔔 Notificaciones — Alertas de emergencia</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="onboarding-dots">
+                    <span class="dot active" data-dot="0"></span>
+                    <span class="dot" data-dot="1"></span>
+                    <span class="dot" data-dot="2"></span>
+                </div>
+                <div class="onboarding-actions">
+                    <button id="btn-onboarding-next" class="btn btn-primary btn-block">Siguiente</button>
+                    <button id="btn-onboarding-start" class="btn btn-primary btn-block hidden">Comenzar</button>
+                    <button id="btn-onboarding-skip" class="btn btn-ghost">Saltar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== REGISTER ==================== -->
+        <section id="page-register" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Crear Cuenta</h1>
+            </div>
+            <div class="page-body page-scroll">
+                <form id="form-register" novalidate>
+                    <div class="form-section">
+                        <h3 class="form-section-title">📸 Selfie de Verificación *</h3>
+                        <p class="form-hint" style="margin-bottom:16px;">Tu foto es obligatoria para que los rescatistas y familiares puedan identificarte en caso de emergencia.</p>
+                        <div id="selfie-section" style="text-align:center;">
+                            <div id="selfie-preview-wrapper" class="selfie-wrapper">
+                                <img id="selfie-result" class="selfie-result" style="display:none;" alt="Tu selfie">
+                                <div id="selfie-placeholder" style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; color:var(--color-text-secondary);">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-7 7-7s7 3 7 7"/></svg>
+                                </div>
+                            </div>
+                            <div style="margin-top:12px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                                <label class="btn btn-primary" style="cursor:pointer;">
+                                    📸 Tomar Selfie
+                                    <input type="file" id="selfie-camera-input" accept="image/*" capture="user" style="display:none;">
+                                </label>
+                                <label class="btn btn-secondary" style="cursor:pointer;">
+                                    🖼️ Subir Foto
+                                    <input type="file" id="selfie-gallery-input" accept="image/*" style="display:none;">
+                                </label>
+                            </div>
+                            <input type="hidden" id="register-photo" value="">
+                            <p id="selfie-error" class="form-hint" style="color:var(--color-emergency); display:none; margin-top:8px;">⚠️ Debes tomarte una selfie para continuar</p>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3 class="form-section-title">👤 Datos Personales</h3>
+                        <div class="form-group"><label class="form-label" for="register-name">Nombre completo *</label><input class="form-input" type="text" id="register-name" placeholder="Ej: María García López" required></div>
+                        <div class="form-group"><label class="form-label" for="register-cedula">Cédula de identidad *</label><input class="form-input" type="text" id="register-cedula" placeholder="V-12345678" required></div>
+                        <div class="form-group"><label class="form-label" for="register-email">Correo electrónico *</label><input class="form-input" type="email" id="register-email" placeholder="correo@ejemplo.com" required></div>
+                        <div class="form-group"><label class="form-label" for="register-password">Contraseña *</label><input class="form-input" type="password" id="register-password" placeholder="Mínimo 6 caracteres" required minlength="6"></div>
+                        <div class="form-group"><label class="form-label" for="register-phone">Teléfono *</label><input class="form-input" type="tel" id="register-phone" placeholder="+58 412 1234567" required></div>
+                        <div class="form-group">
+                            <label class="form-label">Fecha de nacimiento *</label>
+                            <div style="display:flex; gap:8px;">
+                                <select class="form-select" id="register-birth-day" required style="flex:1;">
+                                    <option value="">Día</option>
+                                </select>
+                                <select class="form-select" id="register-birth-month" required style="flex:1.5;">
+                                    <option value="">Mes</option>
+                                    <option value="01">Enero</option><option value="02">Febrero</option>
+                                    <option value="03">Marzo</option><option value="04">Abril</option>
+                                    <option value="05">Mayo</option><option value="06">Junio</option>
+                                    <option value="07">Julio</option><option value="08">Agosto</option>
+                                    <option value="09">Septiembre</option><option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                                </select>
+                                <select class="form-select" id="register-birth-year" required style="flex:1.2;">
+                                    <option value="">Año</option>
+                                </select>
+                            </div>
+                            <script>
+                                (function(){
+                                    var dayS=document.getElementById('register-birth-day');
+                                    var yearS=document.getElementById('register-birth-year');
+                                    for(var d=1;d<=31;d++) { var o=document.createElement('option'); o.value=d<10?'0'+d:''+d; o.textContent=d; dayS.appendChild(o); }
+                                    var cy=new Date().getFullYear();
+                                    for(var y=cy;y>=1920;y--) { var o=document.createElement('option'); o.value=''+y; o.textContent=y; yearS.appendChild(o); }
+                                })();
+                            </script>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3 class="form-section-title">🏥 Información Médica</h3>
+                        <div class="form-group">
+                            <label class="form-label" for="register-blood-type">Tipo de sangre *</label>
+                            <select class="form-select" id="register-blood-type" required>
+                                <option value="">Seleccionar tipo de sangre</option>
+                                <option value="A+">A+</option><option value="A-">A-</option>
+                                <option value="B+">B+</option><option value="B-">B-</option>
+                                <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                <option value="O+">O+</option><option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label" for="register-allergies">Alergias (separadas por coma)</label><input class="form-input" type="text" id="register-allergies" placeholder="Ej: Penicilina, Mariscos"></div>
+                    </div>
+                    <div class="form-section">
+                        <h3 class="form-section-title">📍 Ubicación</h3>
+                        <div class="form-group">
+                            <label class="form-label" for="register-state">Estado *</label>
+                            <select class="form-select" id="register-state" required>
+                                <option value="">Seleccionar estado</option>
+                                <option>Amazonas</option><option>Anzoátegui</option><option>Apure</option><option>Aragua</option>
+                                <option>Barinas</option><option>Bolívar</option><option>Carabobo</option><option>Cojedes</option>
+                                <option>Delta Amacuro</option><option>Distrito Capital</option><option>Falcón</option><option>Guárico</option>
+                                <option>Lara</option><option>Mérida</option><option>Miranda</option><option>Monagas</option>
+                                <option>Nueva Esparta</option><option>Portuguesa</option><option>Sucre</option><option>Táchira</option>
+                                <option>Trujillo</option><option>Vargas</option><option>Yaracuy</option><option>Zulia</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label" for="register-city">Ciudad *</label><input class="form-input" type="text" id="register-city" placeholder="Ej: Caracas" required></div>
+                    </div>
+                    <div class="form-section">
+                        <h3 class="form-section-title">🆘 Contacto de Emergencia</h3>
+                        <div class="form-group"><label class="form-label" for="register-emergency-name">Nombre del contacto *</label><input class="form-input" type="text" id="register-emergency-name" placeholder="Nombre completo" required></div>
+                        <div class="form-group"><label class="form-label" for="register-emergency-phone">Teléfono del contacto *</label><input class="form-input" type="tel" id="register-emergency-phone" placeholder="+58 412 1234567" required></div>
+                    </div>
+                    <button type="submit" id="btn-register-submit" class="btn btn-primary btn-block btn-lg">Crear Mi Cuenta</button>
+                </form>
+                <p class="auth-link">¿Ya tienes cuenta? <a id="link-to-login" href="#">Inicia sesión</a></p>
+            </div>
+        </section>
+
+        <!-- ==================== LOGIN ==================== -->
+        <section id="page-login" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Iniciar Sesión</h1>
+            </div>
+            <div class="page-body auth-page">
+                <div class="auth-logo">
+                    <svg viewBox="0 0 100 120" width="70" height="84"><path d="M50 5 L90 25 L90 65 Q90 95 50 115 Q10 95 10 65 L10 25 Z" fill="#1A56DB"/><path d="M50 75 L38 58 A15 15 0 1 1 62 58 Z" fill="white"/><line x1="45" y1="48" x2="55" y2="48" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/><line x1="50" y1="43" x2="50" y2="53" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/></svg>
+                    <h2 class="auth-title">VidaSegura</h2>
+                </div>
+                <form id="form-login" novalidate>
+                    <div class="form-group"><label class="form-label" for="login-email">Correo electrónico</label><input class="form-input" type="email" id="login-email" placeholder="correo@ejemplo.com" required></div>
+                    <div class="form-group"><label class="form-label" for="login-password">Contraseña</label><input class="form-input" type="password" id="login-password" placeholder="Tu contraseña" required></div>
+                    <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block btn-lg">Iniciar Sesión</button>
+                </form>
+                <p class="auth-link">¿No tienes cuenta? <a id="link-to-register" href="#">Regístrate</a></p>
+            </div>
+        </section>
+
+        <!-- ==================== DASHBOARD ==================== -->
+        <section id="page-dashboard" class="page">
+            <div class="dashboard-header">
+                <div><p class="greeting-small">Bienvenido de vuelta</p><h2 id="dashboard-greeting" class="greeting-name">Hola, Usuario</h2></div>
+                <div id="dashboard-score" class="score-badge"><span class="score-number">0</span><span class="score-label">pts</span></div>
+            </div>
+            <div id="dashboard-map-preview" class="card glass-card map-preview-card"><div class="map-preview-overlay"><span class="map-preview-text">📍 Tu ubicación actual</span></div></div>
+            <div id="dashboard-quick-actions" class="quick-action-grid">
+                <button class="quick-action-item" data-action="qr-view"><span class="quick-icon">📱</span><span class="quick-label">Mi QR</span></button>
+                <button class="quick-action-item" data-action="qr-scan"><span class="quick-icon">📷</span><span class="quick-label">Escanear</span></button>
+                <button class="quick-action-item" data-action="family"><span class="quick-icon">👨‍👩‍👧‍👦</span><span class="quick-label">Familia</span></button>
+                <button class="quick-action-item" data-action="alerts"><span class="quick-icon">🔔</span><span class="quick-label">Alertas</span></button>
+            </div>
+            <div class="card glass-card"><h3 class="card-title">👨‍👩‍👧‍👦 Mi Familia</h3><div id="dashboard-family-list"><p class="empty-state">Crea un círculo familiar para conectar con tus seres queridos</p></div></div>
+            <div class="card glass-card"><h3 class="card-title">🔔 Alertas Recientes</h3><div id="dashboard-alerts-list"><p class="empty-state">Sin alertas sísmicas recientes en tu zona</p></div></div>
+            <div id="dashboard-preparation-card" class="card glass-card">
+                <h3 class="card-title">🛡️ Nivel de Preparación</h3>
+                <div class="preparation-content">
+                    <div class="preparation-ring">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <defs>
+                                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#3B82F6"/>
+                                    <stop offset="100%" stop-color="#34D399"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+                            <circle class="progress-ring-fill" cx="60" cy="60" r="52" id="dashboard-progress-ring"/>
+                        </svg>
+                        <span class="progress-text" id="dashboard-progress-text">0%</span>
+                    </div>
+                    <p class="preparation-hint">Completa tu perfil y activa el GPS para mejorar tu nivel</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PROFILE ==================== -->
+        <section id="page-profile" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Perfil Médico</h1>
+            </div>
+            <div class="page-body page-scroll">
+                <div class="profile-photo-section">
+                    <div id="profile-photo-container" class="profile-photo-wrapper">
+                        <img id="profile-photo" src="" alt="Foto de perfil" class="profile-photo-img">
+                        <div class="profile-photo-placeholder" id="profile-photo-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-7 7-7s7 3 7 7"/></svg>
+                        </div>
+                        <label class="profile-photo-btn" for="profile-photo-input">📷</label>
+                        <input type="file" id="profile-photo-input" accept="image/*" class="hidden">
+                    </div>
+                </div>
+                <form id="form-profile" novalidate>
+                    <div class="form-section">
+                        <h3 class="form-section-title">👤 Datos Personales</h3>
+                        <div class="form-group"><label class="form-label" for="profile-name">Nombre completo</label><input class="form-input" type="text" id="profile-name" required></div>
+                        <div class="form-group"><label class="form-label" for="profile-cedula">Cédula</label><input class="form-input" type="text" id="profile-cedula" required></div>
+                        <div class="form-group"><label class="form-label" for="profile-email">Correo</label><input class="form-input" type="email" id="profile-email"></div>
+                        <div class="form-group"><label class="form-label" for="profile-phone">Teléfono</label><input class="form-input" type="tel" id="profile-phone"></div>
+                        <div class="form-group">
+                            <label class="form-label">Fecha de nacimiento</label>
+                            <div style="display:flex; gap:8px;">
+                                <select class="form-select" id="profile-birth-day" style="flex:1;">
+                                    <option value="">Día</option>
+                                </select>
+                                <select class="form-select" id="profile-birth-month" style="flex:1.5;">
+                                    <option value="">Mes</option>
+                                    <option value="01">Enero</option><option value="02">Febrero</option>
+                                    <option value="03">Marzo</option><option value="04">Abril</option>
+                                    <option value="05">Mayo</option><option value="06">Junio</option>
+                                    <option value="07">Julio</option><option value="08">Agosto</option>
+                                    <option value="09">Septiembre</option><option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                                </select>
+                                <select class="form-select" id="profile-birth-year" style="flex:1.2;">
+                                    <option value="">Año</option>
+                                </select>
+                            </div>
+                            <script>
+                                (function(){
+                                    var dayS=document.getElementById('profile-birth-day');
+                                    var yearS=document.getElementById('profile-birth-year');
+                                    for(var d=1;d<=31;d++) { var o=document.createElement('option'); o.value=d<10?'0'+d:''+d; o.textContent=d; dayS.appendChild(o); }
+                                    var cy=new Date().getFullYear();
+                                    for(var y=cy;y>=1920;y--) { var o=document.createElement('option'); o.value=''+y; o.textContent=y; yearS.appendChild(o); }
+                                })();
+                            </script>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3 class="form-section-title">🩸 Información Médica</h3>
+                        <div class="form-group">
+                            <label class="form-label" for="profile-blood-type">Tipo de sangre</label>
+                            <select class="form-select" id="profile-blood-type">
+                                <option value="">Seleccionar</option>
+                                <option value="A+">A+</option><option value="A-">A-</option>
+                                <option value="B+">B+</option><option value="B-">B-</option>
+                                <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                <option value="O+">O+</option><option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alergias</label>
+                            <div id="profile-allergies-tags" class="tags-container"></div>
+                            <div class="tag-input-row"><input class="form-input" type="text" id="profile-allergy-input" placeholder="Agregar alergia"><button type="button" class="btn btn-sm btn-secondary tag-add-btn" data-target="allergy">+</button></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Medicamentos actuales</label>
+                            <div id="profile-medications-tags" class="tags-container"></div>
+                            <div class="tag-input-row"><input class="form-input" type="text" id="profile-medication-input" placeholder="Agregar medicamento"><button type="button" class="btn btn-sm btn-secondary tag-add-btn" data-target="medication">+</button></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Condiciones crónicas</label>
+                            <div id="profile-conditions-tags" class="tags-container"></div>
+                            <div class="tag-input-row"><input class="form-input" type="text" id="profile-condition-input" placeholder="Agregar condición"><button type="button" class="btn btn-sm btn-secondary tag-add-btn" data-target="condition">+</button></div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3 class="form-section-title">🆘 Contactos de Emergencia</h3>
+                        <p class="form-hint">Contacto principal</p>
+                        <div class="form-group"><label class="form-label" for="profile-emergency-name-1">Nombre</label><input class="form-input" type="text" id="profile-emergency-name-1"></div>
+                        <div class="form-group"><label class="form-label" for="profile-emergency-phone-1">Teléfono</label><input class="form-input" type="tel" id="profile-emergency-phone-1"></div>
+                        <p class="form-hint">Contacto secundario (opcional)</p>
+                        <div class="form-group"><label class="form-label" for="profile-emergency-name-2">Nombre</label><input class="form-input" type="text" id="profile-emergency-name-2"></div>
+                        <div class="form-group"><label class="form-label" for="profile-emergency-phone-2">Teléfono</label><input class="form-input" type="tel" id="profile-emergency-phone-2"></div>
+                    </div>
+                    <div class="form-section">
+                        <h3 class="form-section-title">📋 Información Adicional</h3>
+                        <div class="form-group"><label class="form-label" for="profile-insurance">Seguro médico</label><input class="form-input" type="text" id="profile-insurance" placeholder="Nombre del seguro"></div>
+                        <div class="form-group toggle-group">
+                            <label class="form-label">Donante de órganos</label>
+                            <label class="toggle-switch"><input type="checkbox" id="profile-organ-donor-toggle"><span class="toggle-slider"></span></label>
+                        </div>
+                        <div class="form-group"><label class="form-label" for="profile-medical-notes">Notas médicas adicionales</label><textarea class="form-textarea" id="profile-medical-notes" rows="3" placeholder="Cualquier información adicional relevante"></textarea></div>
+                    </div>
+                    <button type="submit" id="btn-save-profile" class="btn btn-primary btn-block btn-lg">Guardar Cambios</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ==================== QR VIEW ==================== -->
+        <section id="page-qr-view" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Mi Código QR</h1>
+            </div>
+            <div class="page-body qr-view-body">
+                <div id="qr-card" class="qr-card glass-card">
+                    <div class="qr-card-header">
+                        <h3 id="qr-user-name" class="qr-name">Usuario</h3>
+                        <span id="qr-user-blood" class="badge badge-blood">O+</span>
+                    </div>
+                    <div id="qr-code-container" class="qr-code-box"></div>
+                    <p id="qr-user-cedula" class="qr-cedula">V-00000000</p>
+                    <p id="qr-timestamp" class="qr-timestamp">Actualizado: --</p>
+                </div>
+                <div class="qr-actions">
+                    <button id="btn-download-qr" class="btn btn-secondary"><span>📥</span> Descargar</button>
+                    <button id="btn-share-qr" class="btn btn-secondary"><span>📤</span> Compartir</button>
+                </div>
+                <button id="btn-print-qr" class="btn btn-ghost btn-block">🖨️ Imprimir Carnet de Emergencia</button>
+                <div class="qr-info-box">
+                    <p>📌 Comparte este código QR con tus familiares para que puedan ver tu perfil médico y última ubicación en caso de emergencia.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== QR SCAN ==================== -->
+        <section id="page-qr-scan" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Escanear QR</h1>
+            </div>
+            <div class="page-body">
+                <div class="scanner-wrapper">
+                    <div id="qr-reader" class="qr-scanner-box"></div>
+                </div>
+                <div class="scanner-controls">
+                    <button id="btn-start-scanner" class="btn btn-primary btn-block">📷 Activar Cámara</button>
+                    <button id="btn-stop-scanner" class="btn btn-danger btn-block hidden">⏹ Detener Cámara</button>
+                </div>
+                <div id="qr-scan-result" class="hidden"></div>
+            </div>
+        </section>
+
+        <!-- ==================== MAP ==================== -->
+        <section id="page-map" class="page page-full">
+            <div id="map-container" class="map-full"></div>
+            <div id="map-controls" class="map-controls-panel">
+                <button id="btn-map-center" class="btn btn-icon btn-glass" title="Mi ubicación">🎯</button>
+                <button id="btn-map-resources" class="btn btn-icon btn-glass" title="Recursos">🏥</button>
+                <button id="btn-map-report" class="btn btn-icon btn-danger" style="box-shadow: 0 4px 12px rgba(220,38,38,0.4); font-size: 1.2rem;" title="Reportar">📢</button>
+            </div>
+            <div id="map-info-bar" class="map-info-bar hidden">
+                <span id="map-coords"></span>
+                <span id="map-accuracy"></span>
+            </div>
+        </section>
+
+        <!-- ==================== FAMILY ==================== -->
+        <section id="page-family" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Mi Familia</h1>
+            </div>
+            <div class="page-body page-scroll">
+                <div id="family-circles-list"></div>
+                <div class="family-actions">
+                    <button id="btn-create-circle" class="btn btn-primary btn-block">➕ Crear Círculo Familiar</button>
+                    <button id="btn-join-circle" class="btn btn-secondary btn-block">🔗 Unirme a un Círculo</button>
+                </div>
+                <div id="family-circle-detail" class="hidden">
+                    <div class="card glass-card">
+                        <h3 id="family-circle-name" class="card-title">Círculo</h3>
+                        <div class="circle-code-row">
+                            <span class="circle-code-label">Código de invitación:</span>
+                            <span id="family-circle-code" class="circle-code"></span>
+                            <button id="btn-copy-circle-code" class="btn btn-sm btn-ghost">📋</button>
+                        </div>
+                    </div>
+                    <h4 class="section-subtitle">Miembros</h4>
+                    <div id="family-members-list"></div>
+
+                    <h4 class="section-subtitle">Lugares Seguros (Zonas)</h4>
+                    <div id="family-places-list"></div>
+                    <button id="btn-add-place" class="btn btn-secondary btn-block" style="margin-bottom: 16px;">📍 Agregar Lugar Seguro</button>
+
+                    <div id="family-map-container" class="family-map"></div>
+                    <button id="btn-leave-circle" class="btn btn-danger btn-block">Abandonar Círculo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== CHAT ==================== -->
+        <section id="page-chat" class="page page-chat">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Chat de Emergencia</h1>
+            </div>
+            <div id="chat-circle-selector" class="chat-selector"></div>
+            <div id="chat-messages" class="chat-messages-container">
+                <p class="empty-state">Selecciona un círculo para chatear</p>
+            </div>
+            <div id="chat-quick-messages" class="chat-quick-bar">
+                <button class="btn btn-sm btn-quick" data-msg="safe">Estoy bien ✅</button>
+                <button class="btn btn-sm btn-quick" data-msg="help">Necesito ayuda 🆘</button>
+                <button class="btn btn-sm btn-quick" data-msg="coming">En camino 🚗</button>
+                <button class="btn btn-sm btn-quick" data-msg="shelter">En refugio ⛑️</button>
+            </div>
+            <div class="chat-input-bar">
+                <input type="text" id="chat-input" class="form-input" placeholder="Escribe un mensaje...">
+                <button id="btn-send-location" class="btn btn-icon" title="Enviar ubicación">📍</button>
+                <button id="btn-send-message" class="btn btn-icon btn-primary" title="Enviar">➤</button>
+            </div>
+        </section>
+
+        <!-- ==================== ALERTS ==================== -->
+        <section id="page-alerts" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Alertas Sísmicas</h1>
+                <div id="alerts-status" class="status-badge status-active"><span class="status-dot"></span> Activo</div>
+            </div>
+            <div class="page-body page-scroll">
+                <div id="alerts-active-list"></div>
+                <div id="alerts-map-container" class="alerts-map"></div>
+                <h4 class="section-subtitle">Historial reciente</h4>
+                <div id="alerts-history-list">
+                    <p class="empty-state">Cargando actividad sísmica...</p>
+                </div>
+            </div>
+            <div id="alerts-protocol" class="hidden protocol-overlay">
+                <div class="protocol-content glass-card">
+                    <h3 id="protocol-title">Protocolo de Seguridad</h3>
+                    <div id="protocol-body"></div>
+                    <button id="btn-close-protocol" class="btn btn-primary btn-block">Entendido</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== RESOURCES ==================== -->
+        <section id="page-resources" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Recursos de Emergencia</h1>
+            </div>
+            <div class="page-body page-scroll">
+                <div id="resources-map-container" class="resources-map"></div>
+                <div id="resources-filters" class="resource-filters">
+                    <button class="btn btn-filter active" data-filter="all">Todos</button>
+                    <button class="btn btn-filter" data-filter="hospital">🏥 Hospitales</button>
+                    <button class="btn btn-filter" data-filter="fire">🚒 Bomberos</button>
+                    <button class="btn btn-filter" data-filter="shelter">⛑️ Refugios</button>
+                    <button class="btn btn-filter" data-filter="water">💧 Agua</button>
+                </div>
+                <div id="resources-list"></div>
+                <button id="btn-report-resource" class="btn btn-secondary btn-block">📢 Reportar Recurso</button>
+            </div>
+        </section>
+
+        <!-- ==================== STATS ==================== -->
+        <section id="page-stats" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-back="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                <h1 class="page-title">Mi Preparación</h1>
+            </div>
+            <div class="page-body page-scroll">
+                <div class="stats-hero">
+                    <div class="stats-ring-container">
+                        <svg class="progress-ring progress-ring-lg" viewBox="0 0 160 160">
+                            <defs>
+                                <linearGradient id="progressGradientLg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#3B82F6"/>
+                                    <stop offset="100%" stop-color="#34D399"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="progress-ring-bg" cx="80" cy="80" r="70"/>
+                            <circle class="progress-ring-fill" cx="80" cy="80" r="70" id="stats-progress-ring" style="stroke: url(#progressGradientLg)"/>
+                        </svg>
+                        <div class="stats-ring-content">
+                            <span id="stats-score-number" class="stats-score-big">0</span>
+                            <span class="stats-score-unit">/ 100</span>
+                        </div>
+                    </div>
+                    <p id="stats-score-label" class="stats-level">Principiante</p>
+                </div>
+                <div id="stats-breakdown" class="stats-breakdown card glass-card"></div>
+                <div class="card glass-card">
+                    <h3 class="card-title">💡 Consejos del Día</h3>
+                    <div id="stats-tips"></div>
+                </div>
+                <button id="stats-simulacro-btn" class="btn btn-alert btn-block">🚨 Iniciar Simulacro de Emergencia</button>
+            </div>
+        </section>
+
+        <!-- ==================== SETTINGS ==================== -->
+        <section id="page-settings" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Configuración</h1>
+            </div>
+            <div class="page-body page-scroll">
+                <div class="settings-profile-card card glass-card" id="settings-user-card">
+                    <div class="settings-avatar" id="settings-avatar"></div>
+                    <div><h3 id="settings-user-name">Usuario</h3><p id="settings-user-email" class="text-secondary">correo@ejemplo.com</p></div>
+                </div>
+                <div class="settings-group">
+                    <h4 class="settings-group-title">General</h4>
+                    <div class="settings-item" id="setting-theme">
+                        <span class="settings-icon">🌙</span>
+                        <span class="settings-label">Modo oscuro</span>
+                        <label class="toggle-switch"><input type="checkbox" id="settings-theme-toggle" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-item" id="setting-gps">
+                        <span class="settings-icon">📍</span>
+                        <span class="settings-label">GPS de alta precisión</span>
+                        <label class="toggle-switch"><input type="checkbox" id="settings-gps-mode"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-item" id="setting-notifications">
+                        <span class="settings-icon">🔔</span>
+                        <span class="settings-label">Notificaciones</span>
+                        <label class="toggle-switch"><input type="checkbox" id="settings-notifications-toggle" checked><span class="toggle-slider"></span></label>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h4 class="settings-group-title">Cuenta</h4>
+                    <button id="btn-edit-profile" class="settings-item settings-btn"><span class="settings-icon">👤</span><span class="settings-label">Editar perfil médico</span><span class="settings-arrow">›</span></button>
+                    <button id="btn-view-qr" class="settings-item settings-btn"><span class="settings-icon">📱</span><span class="settings-label">Mi código QR</span><span class="settings-arrow">›</span></button>
+                    <button id="btn-view-stats" class="settings-item settings-btn"><span class="settings-icon">📊</span><span class="settings-label">Mi preparación</span><span class="settings-arrow">›</span></button>
+                </div>
+                <div class="settings-group">
+                    <h4 class="settings-group-title">Información</h4>
+                    <div class="settings-item"><span class="settings-icon">ℹ️</span><span class="settings-label">Versión</span><span class="settings-value">1.0.31</span></div>
+                    <button id="btn-install-pwa" class="settings-item settings-btn hidden"><span class="settings-icon">📲</span><span class="settings-label">Instalar aplicación</span><span class="settings-arrow">›</span></button>
+                    <a href="https://example.com/privacy-policy-placeholder" target="_blank" class="settings-item settings-btn" style="text-decoration:none;"><span class="settings-icon">🔒</span><span class="settings-label">Política de Privacidad</span><span class="settings-arrow">›</span></a>
+                </div>
+                <button id="btn-logout" class="btn btn-secondary btn-block" style="margin-bottom:12px;">Cerrar Sesión</button>
+                <button id="btn-delete-account" class="btn btn-danger btn-block">Eliminar Mi Cuenta</button>
+                <p class="settings-footer">VidaSegura v1.0.31<br>Hecho con ❤️ para Venezuela</p>
+            </div>
+        </section>
+
+        <!-- ==================== PUBLIC PROFILE ==================== -->
+        <section id="page-public-profile" class="page">
+            <div class="public-profile-header">
+                <svg viewBox="0 0 100 120" width="40" height="48"><path d="M50 5 L90 25 L90 65 Q90 95 50 115 Q10 95 10 65 L10 25 Z" fill="#1A56DB"/><path d="M50 75 L38 58 A15 15 0 1 1 62 58 Z" fill="white"/><line x1="45" y1="48" x2="55" y2="48" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/><line x1="50" y1="43" x2="50" y2="53" stroke="#DC2626" stroke-width="3.5" stroke-linecap="round"/></svg>
+                <span class="public-brand">VidaSegura</span>
+                <span class="badge badge-emergency">PERFIL DE EMERGENCIA</span>
+            </div>
+            <div class="page-body page-scroll">
+                <div id="public-profile-card" class="public-card glass-card">
+                    <div class="public-photo-section">
+                        <img id="public-photo" class="public-photo" src="" alt="">
+                        <div class="public-photo-placeholder" id="public-photo-placeholder"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-7 7-7s7 3 7 7"/></svg></div>
+                    </div>
+                    <h2 id="public-name" class="public-name">--</h2>
+                    <div class="public-badges">
+                        <span id="public-blood-type" class="badge badge-blood-lg">--</span>
+                        <span id="public-age" class="badge badge-info">-- años</span>
+                    </div>
+                    <div class="public-field"><span class="public-label">Cédula</span><span id="public-cedula" class="public-value">--</span></div>
+                    <div class="public-field" id="public-allergies-row"><span class="public-label">⚠️ Alergias</span><span id="public-allergies" class="public-value public-alert">--</span></div>
+                    <div class="public-field" id="public-medications-row"><span class="public-label">💊 Medicamentos</span><span id="public-medications" class="public-value">--</span></div>
+                    <div class="public-field" id="public-conditions-row"><span class="public-label">🏥 Condiciones</span><span id="public-conditions" class="public-value">--</span></div>
+                    <div class="public-field" id="public-notes-row"><span class="public-label">📋 Notas</span><span id="public-medical-notes" class="public-value">--</span></div>
+                    <div class="public-section">
+                        <h3>📞 Contactos de Emergencia</h3>
+                        <div id="public-emergency-contacts"></div>
+                    </div>
+                    <div class="public-section">
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <h3>📍 Ubicación en Tiempo Real</h3>
+                            <div id="public-live-status" class="status-badge status-active" style="display:none;">
+                                <span id="public-live-dot" class="status-dot"></span>
+                                EN VIVO
+                            </div>
+                        </div>
+                        <p id="public-last-location" class="public-location">Ubicación no disponible</p>
+                        <div id="public-map-container" class="public-map" style="height:280px;"></div>
+                    </div>
+                    <p id="public-timestamp" class="public-timestamp">Última actualización: --</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SOS ACTIVE ==================== -->
+        <section id="page-sos-active" class="page page-sos">
+            <div class="sos-active-content">
+                <div class="sos-pulse-icon">🆘</div>
+                <h2 id="sos-status" class="sos-title">EMERGENCIA ACTIVA</h2>
+                <p id="sos-location-text" class="sos-coords">Obteniendo ubicación...</p>
+                <div id="sos-map-container" class="sos-map"></div>
+                <div id="sos-timer" class="sos-timer">00:00</div>
+                <div class="sos-notified">
+                    <h4>Contactos notificados:</h4>
+                    <div id="sos-contacts-notified"></div>
+                </div>
+                <button id="btn-sos-cancel" class="btn btn-ghost btn-block btn-lg sos-cancel-btn">✕ Cancelar Emergencia</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Reporte Comunitario -->
+    <div id="modal-report" class="modal hidden">
+        <div class="modal-content">
+            <h2>Crear Reporte</h2>
+            <p>Selecciona el tipo de evento en tu ubicación actual:</p>
+            <div class="form-group">
+                <select id="report-type" class="form-control">
+                    <option value="robo">Robo / Asalto 🚨</option>
+                    <option value="sospechoso">Actividad Sospechosa 👀</option>
+                    <option value="accidente">Accidente 💥</option>
+                    <option value="obra">Obra / Vía Cerrada 🚧</option>
+                    <option value="sin_luz">Sin Iluminación 🌑</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <textarea id="report-desc" class="form-control" placeholder="Detalles (opcional)..." rows="3"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-cancel-report" class="btn btn-secondary">Cancelar</button>
+                <button id="btn-confirm-report" class="btn btn-danger">Publicar Reporte</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Zona Segura -->
+    <div id="modal-place" class="modal hidden">
+        <div class="modal-content">
+            <h2>Nuevo Lugar Seguro</h2>
+            <div class="form-group">
+                <label>Nombre del Lugar</label>
+                <input type="text" id="place-name" class="form-control" placeholder="Ej. Colegio, Casa...">
+            </div>
+            <p>Se creará usando tu ubicación actual (100m de radio).</p>
+            <div class="modal-actions">
+                <button id="btn-cancel-place" class="btn btn-secondary">Cancelar</button>
+                <button id="btn-confirm-place" class="btn btn-primary">Guardar Zona</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <nav id="nav-bottom" class="hidden">
+        <button class="nav-item active" data-page="dashboard"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
+        <button class="nav-item" data-page="map"><span class="nav-icon">🗺️</span><span class="nav-label">Mapa</span></button>
+        <button class="nav-item nav-sos-spacer" disabled></button>
+        <button class="nav-item" data-page="family"><span class="nav-icon">👨‍👩‍👧‍👦</span><span class="nav-label">Familia</span></button>
+        <button class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span><span class="nav-label">Ajustes</span></button>
+    </nav>
+
+    <!-- ===== FIREBASE SDK (compat mode for vanilla JS) ===== -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+    <!-- ===== THIRD PARTY ===== -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <!-- ===== APP SCRIPTS ===== -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/qr.js"></script>
+    <script src="js/gps.js"></script>
+    <script src="js/geofence.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/sos.js"></script>
+    <script src="js/family.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/resources.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/updater.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Init App
+        window.addEventListener('load', function() {
+            if (window.VidaSegura && window.VidaSegura.App) {
+                window.VidaSegura.App.init();
+            }
+            if (window.VidaSegura && window.VidaSegura.Updater) {
+                window.VidaSegura.Updater.init();
+            }
+        });
+    </script>
+    <script src="js/notifications.js"></script>
+</body>
+</html>

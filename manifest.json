@@ -1,0 +1,20 @@
+{
+  "name": "VidaSegura - Geolocalización de Emergencia",
+  "short_name": "VidaSegura",
+  "description": "Sistema Nacional de Geolocalización para Emergencias en Venezuela",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#1A56DB",
+  "orientation": "portrait-primary",
+  "categories": ["medical", "utilities"],
+  "lang": "es",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/*.py",
+      "**/*.bat",
+      "**/*.exe",
+      "**/*.so",
+      "**/*.dll",
+      "android/**",
+      "**/*.pem",
+      "**/*.rules",
+      "**/*.log",
+      "userdata/**",
+      "data/**",
+      "firestore.indexes.json",
+      "database.rules.json",
+      "storage.rules",
+      "VidaSegura.apk"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/app.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(svg|png|jpg|jpeg|gif|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=86400"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

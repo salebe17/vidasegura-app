@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidaSegura — Protege a tu familia con GPS en tiempo real</title>
+    <meta name="description" content="VidaSegura: localiza a tu familia en tiempo real 24/7. GPS, alertas SOS, círculos familiares y chat de emergencia. Descarga gratis.">
+    <meta name="theme-color" content="#0a0f1e">
+    <meta property="og:title" content="VidaSegura — Protege a tu familia">
+    <meta property="og:description" content="Localiza a tu familia en tiempo real 24/7 con GPS, alertas SOS y chat de emergencia.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vidasegura.co">
+    <link rel="icon" type="image/png" href="assets/icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --accent: #06d6a0;
+            --danger: #ef4444;
+            --bg-dark: #0a0f1e;
+            --bg-card: #111827;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --radius: 16px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── NAV ── */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 16px 24px;
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .nav-logo {
+            font-size: 1.3rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-logo span { font-size: 0.7rem; opacity: 0.7; -webkit-text-fill-color: var(--text-muted); display: block; font-weight: 400; }
+        .nav-btn {
+            padding: 8px 20px; border-radius: 100px; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,130,246,0.4); }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 100px 24px 60px;
+            position: relative;
+            background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
+        }
+        .hero::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: url('assets/hero-family.png') center 20% / cover no-repeat;
+            opacity: 0.12; z-index: 0;
+        }
+        .hero > * { position: relative; z-index: 1; }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 16px; border-radius: 100px;
+            background: rgba(6, 214, 160, 0.1); border: 1px solid rgba(6, 214, 160, 0.3);
+            color: var(--accent); font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 24px;
+            animation: pulse-badge 2s infinite;
+        }
+        @keyframes pulse-badge {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.2); }
+            50% { box-shadow: 0 0 0 8px rgba(6, 214, 160, 0); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 6vw, 3.8rem);
+            font-weight: 900; line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.15rem; color: var(--text-muted); max-width: 540px;
+            margin-bottom: 36px;
+        }
+
+        .hero-buttons { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 360px; }
+
+        .btn-download {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 18px 32px; border-radius: 16px; font-size: 1.1rem; font-weight: 700;
+            color: white; text-decoration: none; border: none; cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), #059669);
+            box-shadow: 0 8px 30px rgba(6, 214, 160, 0.3);
+            transition: all 0.3s;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 8px 30px rgba(6, 214, 160, 0.3); }
+            to { box-shadow: 0 12px 40px rgba(6, 214, 160, 0.5); }
+        }
+        .btn-download:hover { transform: translateY(-3px) scale(1.02); }
+        .btn-download .icon { font-size: 1.5rem; }
+
+        .btn-web {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px 32px; border-radius: 16px; font-size: 0.95rem; font-weight: 600;
+            color: var(--text-muted); text-decoration: none;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        .btn-web:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        .hero-stats {
+            display: flex; gap: 40px; margin-top: 48px; padding-top: 32px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .hero-stats div { text-align: center; }
+        .hero-stats .num { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+        .hero-stats .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ── FEATURES ── */
+        .features {
+            padding: 80px 24px;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #0d1424 100%);
+        }
+        .features-title {
+            text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 12px;
+        }
+        .features-sub {
+            text-align: center; color: var(--text-muted); margin-bottom: 48px; font-size: 1rem;
+        }
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; max-width: 900px; margin: 0 auto;
+        }
+        .feature-card {
+            padding: 28px; border-radius: var(--radius);
+            background: var(--bg-card); border: 1px solid rgba(255,255,255,0.06);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-4px); border-color: rgba(59,130,246,0.3); }
+        .feature-icon { font-size: 2.2rem; margin-bottom: 14px; }
+        .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+        .feature-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+        .feature-tag {
+            display: inline-block; padding: 3px 10px; border-radius: 100px;
+            font-size: 0.7rem; font-weight: 600; margin-top: 12px;
+            background: rgba(6, 214, 160, 0.1); color: var(--accent);
+        }
+
+        /* ── HOW IT WORKS ── */
+        .how {
+            padding: 80px 24px;
+            background: var(--bg-dark);
+        }
+        .how-title { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 48px; }
+        .how-steps {
+            display: flex; flex-direction: column; gap: 32px;
+            max-width: 500px; margin: 0 auto;
+        }
+        .how-step {
+            display: flex; gap: 20px; align-items: flex-start;
+        }
+        .how-num {
+            flex-shrink: 0; width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+        .how-step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+        .how-step p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* ── CTA ── */
+        .cta {
+            padding: 80px 24px; text-align: center;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #0d1424 50%, var(--bg-dark) 100%);
+            position: relative;
+        }
+        .cta::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px; height: 400px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+        }
+        .cta > * { position: relative; z-index: 1; }
+        .cta h2 { font-size: 2rem; font-weight: 800; margin-bottom: 16px; }
+        .cta p { color: var(--text-muted); margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; }
+        .cta .btn-download { max-width: 360px; margin: 0 auto; }
+
+        /* ── FOOTER ── */
+        .footer {
+            padding: 32px 24px; text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: var(--text-muted); font-size: 0.8rem;
+        }
+        .footer a { color: var(--primary); text-decoration: none; }
+
+        /* ── MOBILE ── */
+        @media (max-width: 640px) {
+            .hero-stats { gap: 24px; }
+            .hero-stats .num { font-size: 1.4rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .nav { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAV -->
+    <nav class="nav">
+        <div class="nav-logo">🛡️ VidaSegura <span>Protección familiar</span></div>
+        <a href="#descargar" class="nav-btn">Descargar</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>🔴</span> Disponible para Android
+        </div>
+        <h1>Siempre sabe dónde está <em>tu familia</em></h1>
+        <p>GPS en tiempo real 24/7, alertas SOS y chat de emergencia. Porque la seguridad de los tuyos no puede esperar.</p>
+
+        <div class="hero-buttons" id="descargar">
+            <a href="https://github.com/salebe17/vidasegura-app/releases/download/v1.0.31/VidaSegura.apk" class="btn-download" id="btn-download-hero" download>
+                <span class="icon">📲</span>
+                Descargar App Gratis
+            </a>
+            <a href="app.html" class="btn-web" id="btn-web-hero">
+                🌐 Usar versión web (sin instalar)
+            </a>
+        </div>
+
+        <div class="hero-stats">
+            <div>
+                <div class="num">24/7</div>
+                <div class="label">GPS Activo</div>
+            </div>
+            <div>
+                <div class="num">&lt;3s</div>
+                <div class="label">Tiempo Real</div>
+            </div>
+            <div>
+                <div class="num">100%</div>
+                <div class="label">Gratuito</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features">
+        <h2 class="features-title">Todo lo que necesitas para proteger a tu familia</h2>
+        <p class="features-sub">Funciones diseñadas para la seguridad real de los tuyos</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3>GPS en Tiempo Real 24/7</h3>
+                <p>Conoce la ubicación exacta de tu familia en todo momento, incluso con la pantalla apagada.</p>
+                <span class="feature-tag">Funciona en segundo plano</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚨</div>
+                <h3>Alerta SOS</h3>
+                <p>Un solo botón envía tu ubicación exacta a todos tus contactos de emergencia al instante.</p>
+                <span class="feature-tag">Emergencias</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                <h3>Círculos Familiares</h3>
+                <p>Crea grupos con tu familia. Cada miembro ve la ubicación de los demás en un mapa compartido.</p>
+                <span class="feature-tag">Multiusuario</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Chat de Emergencia</h3>
+                <p>Mensajería instantánea dentro de tus círculos. Comparte ubicación con un toque.</p>
+                <span class="feature-tag">En tiempo real</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Código QR Personal</h3>
+                <p>Tu código QR contiene tu información de emergencia. Quien lo escanee puede ayudarte.</p>
+                <span class="feature-tag">Identificación</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>Alertas Sísmicas</h3>
+                <p>Recibe notificaciones de sismos cerca de tu ubicación y la de tu familia automáticamente.</p>
+                <span class="feature-tag">Protección</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how">
+        <h2 class="how-title">Empieza en 3 pasos</h2>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="how-num">1</div>
+                <div>
+                    <h3>Descarga la app</h3>
+                    <p>Instálala en tu celular en menos de 1 minuto. Es gratis y pesa solo 6 MB.</p>
+                </div>
+            </div>
+            <div class="how-step">
+                <div class="how-num">2</div>
+                <div>
+                    <h3>Crea tu cuenta</h3>
+                    <p>Regístrate con tu correo, agrega tu foto y tus contactos de emergencia.</p>
+                </div>
+            </div>
+            <div class="how-step">
+                <div class="how-num">3</div>
+                <div>
+                    <h3>Invita a tu familia</h3>
+                    <p>Comparte el código de tu círculo familiar y todos estarán conectados al instante.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-section">
+        <h2>No dejes la seguridad para mañana</h2>
+        <a href="https://github.com/salebe17/vidasegura-app/releases/download/v1.0.31/VidaSegura.apk" class="btn-download" download>
+            <span class="icon">📲</span>
+            Descargar Gratis
+        </a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2026 VidaSegura. Hecho con ❤️ para proteger familias.</p>
+        <p style="margin-top: 8px;">
+            <a href="app.html">Versión Web</a> · 
+            <a href="mailto:moisalebe@gmail.com">Contacto</a>
+        </p>
+    </footer>
+
+    <!-- INSTALLATION MODAL -->
+    <div id="install-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>📱 Instrucciones de Instalación</h3>
+            <p>Tu descarga comenzará en un momento. Como VidaSegura se descarga de forma segura fuera de la Play Store, sigue estos pasos:</p>
+            <div class="install-steps">
+                <div class="step">
+                    <span>1</span>
+                    <p>Abre el archivo descargado (VidaSegura.apk).</p>
+                </div>
+                <div class="step">
+                    <span>2</span>
+                    <p>Si Android te pide permisos, toca <strong>Configuración</strong> y activa <strong>"Permitir desde esta fuente"</strong>.</p>
+                </div>
+                <div class="step">
+                    <span>3</span>
+                    <p>Si aparece <strong>Google Play Protect</strong>, NO toques "Entendido". Toca el texto que dice <strong>"Instalar de todas formas"</strong>.</p>
+                </div>
+            </div>
+            <p class="modal-note">✅ 100% libre de virus y seguro para tu familia.</p>
+            <button id="btn-close-modal" class="btn-download" style="width: 100%; padding: 14px; font-size: 1rem;">Entendido</button>
+        </div>
+    </div>
+
+    <style>
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 15, 30, 0.9); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px;
+            opacity: 1; transition: opacity 0.3s;
+        }
+        .modal-overlay.hidden {
+            opacity: 0; pointer-events: none;
+        }
+        .modal-content {
+            background: var(--bg-card); padding: 32px; border-radius: var(--radius);
+            max-width: 400px; width: 100%; border: 1px solid rgba(255,255,255,0.1);
+            text-align: left;
+        }
+        .modal-content h3 { font-size: 1.3rem; margin-bottom: 12px; color: white; }
+        .modal-content > p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 24px; }
+        .install-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+        .step { display: flex; gap: 12px; align-items: flex-start; }
+        .step span {
+            background: rgba(59,130,246,0.1); color: var(--primary);
+            width: 28px; height: 28px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;
+        }
+        .step p { font-size: 0.9rem; color: #cbd5e1; margin: 0; }
+        .step strong { color: white; }
+        .modal-note { font-size: 0.85rem; color: var(--accent) !important; font-weight: 600; text-align: center; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadLinks = [
+                document.getElementById('btn-download-hero'),
+                document.querySelector('.cta-section .btn-download')
+            ];
+            const modal = document.getElementById('install-modal');
+            const btnClose = document.getElementById('btn-close-modal');
+            const apkUrl = "https://github.com/salebe17/vidasegura-app/releases/download/v1.0.31/VidaSegura.apk";
+
+            downloadLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modal.classList.remove('hidden');
+                    
+                    // Trigger download after 1 second to let them read the instructions
+                    setTimeout(() => {
+                        window.location.href = apkUrl;
+                    }, 1000);
+                });
+            });
+
+            btnClose.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

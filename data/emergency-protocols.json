@@ -1,0 +1,96 @@
+{
+  "earthquake": {
+    "title": "🏚️ Protocolo ante Terremoto",
+    "icon": "🏚️",
+    "steps": [
+      "Mantén la calma. No corras ni grites.",
+      "Si estás dentro de un edificio, ubícate debajo de una mesa resistente o junto a una columna.",
+      "Aléjate de ventanas, espejos, estantes y objetos que puedan caer.",
+      "Si estás en la calle, aléjate de edificios, postes y cables eléctricos.",
+      "No uses ascensores bajo ninguna circunstancia.",
+      "Si estás conduciendo, detén el vehículo en un lugar seguro lejos de puentes y edificios.",
+      "Protege tu cabeza y cuello con los brazos o un objeto resistente.",
+      "Permanece en tu posición de seguridad hasta que deje de temblar."
+    ],
+    "afterSteps": [
+      "Evacúa el edificio con calma usando las escaleras.",
+      "Revisa si hay heridos a tu alrededor y presta primeros auxilios básicos.",
+      "No enciendas fósforos, velas ni encendedores por posibles fugas de gas.",
+      "Verifica que no haya daños estructurales antes de reingresar a tu vivienda.",
+      "Cierra las llaves de gas y agua.",
+      "Mantente informado a través de fuentes oficiales de Protección Civil.",
+      "Ten preparado un kit de emergencia con agua, linterna, radio y documentos.",
+      "Prepárate para réplicas, que pueden ocurrir minutos, horas o días después."
+    ]
+  },
+  "tsunami": {
+    "title": "🌊 Protocolo ante Tsunami",
+    "icon": "🌊",
+    "steps": [
+      "Si sientes un terremoto fuerte cerca de la costa, dirígete inmediatamente a zonas elevadas.",
+      "No esperes la alerta oficial si el sismo fue muy fuerte; actúa de inmediato.",
+      "Aléjate de la playa, puertos, ríos y zonas costeras bajas.",
+      "Dirígete a terrenos de al menos 30 metros sobre el nivel del mar.",
+      "Si no puedes llegar a un lugar elevado, sube a los pisos superiores de un edificio de concreto.",
+      "Nunca vayas a la playa a observar el tsunami.",
+      "Escucha las instrucciones de las autoridades por radio o altavoces.",
+      "Lleva contigo solo lo esencial: documentos, agua y medicinas."
+    ],
+    "afterSteps": [
+      "No regreses a la zona costera hasta que las autoridades lo autoricen.",
+      "Las olas pueden seguir llegando durante varias horas.",
+      "Mantente alejado de escombros flotantes y aguas contaminadas.",
+      "Verifica la seguridad del agua potable antes de consumirla.",
+      "Reporta personas desaparecidas a las autoridades.",
+      "Colabora con los equipos de rescate si estás en condiciones de hacerlo."
+    ]
+  },
+  "flood": {
+    "title": "🌧️ Protocolo ante Inundación",
+    "icon": "🌧️",
+    "steps": [
+      "Muévete a un lugar elevado de inmediato. No esperes a que suba el agua.",
+      "Nunca camines, nades o conduzcas a través de aguas de inundación.",
+      "Solo 15 centímetros de agua en movimiento pueden derribarte.",
+      "Desconecta los equipos eléctricos si puedes hacerlo sin riesgo.",
+      "Evita tocar cables eléctricos caídos o sumergidos en agua.",
+      "Si estás en un vehículo y el agua sube, sal del auto e intenta llegar a terreno elevado.",
+      "Aléjate de cauces de ríos, quebradas y canales de drenaje.",
+      "Sigue las rutas de evacuación indicadas por Protección Civil."
+    ],
+    "afterSteps": [
+      "No regreses a tu vivienda hasta que las autoridades lo indiquen.",
+      "Verifica que la estructura de tu vivienda no esté comprometida.",
+      "No consumas agua del grifo hasta que se confirme su potabilidad.",
+      "Limpia y desinfecta todo lo que haya estado en contacto con el agua de inundación.",
+      "Desecha alimentos que hayan estado en contacto con aguas contaminadas.",
+      "Reporta daños a las líneas de emergencia locales.",
+      "Cuidado con animales peligrosos desplazados por la inundación (serpientes, escorpiones).",
+      "Documenta los daños con fotos para posibles reclamos."
+    ]
+  },
+  "fire": {
+    "title": "🔥 Protocolo ante Incendio",
+    "icon": "🔥",
+    "steps": [
+      "Activa la alarma de incendio si hay una disponible.",
+      "Llama al cuerpo de bomberos de inmediato.",
+      "Evacúa el lugar por las rutas señalizadas. No uses ascensores.",
+      "Si hay humo, desplázate gateando, ya que el aire más limpio está cerca del suelo.",
+      "Antes de abrir una puerta, tócala con el dorso de la mano. Si está caliente, no la abras.",
+      "Si tu ropa se enciende: detente, tírate al suelo y rueda.",
+      "Cubre tu nariz y boca con un paño húmedo si es posible.",
+      "Cierra las puertas detrás de ti al evacuar para retrasar la propagación del fuego."
+    ],
+    "afterSteps": [
+      "No reingreses al edificio hasta que los bomberos lo autoricen.",
+      "Reúnete en el punto de encuentro designado y cuenta a las personas.",
+      "Reporta a los bomberos si alguien quedó atrapado dentro.",
+      "Busca atención médica si inhalaste humo, aunque te sientas bien.",
+      "No toques ni muevas escombros ni materiales quemados.",
+      "Documenta los daños para seguros y ayudas.",
+      "Revisa la instalación eléctrica y de gas antes de restablecer servicios.",
+      "Instala detectores de humo y verifica extintores regularmente como prevención futura."
+    ]
+  }
+}

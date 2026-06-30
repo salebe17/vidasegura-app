@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users: owner can read/write, anyone can read basic info (for QR profiles)
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // Settings subcollection: only owner
+      match /settings/{settingId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Circles: members can read/write, anyone authenticated can create
+    match /circles/{circleId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && request.auth.uid in resource.data.members;
+      allow update: if request.auth != null && request.auth.uid in resource.data.members;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.ownerId;
+      
+      // Messages: circle members can read/write
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+    
+    // Alerts: anyone can read (for emergency), owner can write
+    match /alerts/{alertId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+  }
+}

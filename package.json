@@ -1,0 +1,30 @@
+{
+  "name": "vidasegura",
+  "version": "1.0.31",
+  "description": "App de emergencias familiares",
+  "main": "index.html",
+  "scripts": {
+    "build": "node scripts/copy-www.js",
+    "sync": "npm run build && npx cap sync android",
+    "apk": "npm run sync && cd android && .\\gradlew assembleDebug",
+    "apk:release": "npm run sync && cd android && .\\gradlew assembleRelease"
+  },
+  "author": "VidaSegura",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/geolocation": "^8.2.0",
+    "@capacitor/local-notifications": "^8.1.0",
+    "@capacitor/push-notifications": "^8.1.1",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
