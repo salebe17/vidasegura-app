@@ -508,7 +508,12 @@ window.VidaSegura.Family = (function () {
                 // Actualizar info en la lista de miembros si existe
                 var memberInfoEl = document.getElementById('member-info-' + uid);
                 if (memberInfoEl) {
-                    memberInfoEl.innerHTML = batteryHtml ? '<small>' + batteryHtml.substring(3) + '</small>' : '';
+                    var infoHtml = batteryHtml ? '<small>' + batteryHtml.substring(3) + '</small>' : '<small>Activo</small>';
+                    infoHtml += '<div style="display:flex; gap:5px; margin-top:8px;">' +
+                                '<button class="btn btn-sm" style="flex:1; padding:6px; font-size:12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff;" onclick="window.VidaSegura.Family.showHistory(\'' + uid + '\')">Historial</button>' +
+                                '<button class="btn btn-sm btn-primary" style="flex:1; padding:6px; font-size:12px; border-radius:6px;" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + loc.lat + ',' + loc.lng + '\', \'_system\')">Navegar</button>' +
+                                '</div>';
+                    memberInfoEl.innerHTML = infoHtml;
                 }
 
                 // Actualizar o crear marcador
