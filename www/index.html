@@ -632,13 +632,13 @@
                 </div>
                 <div class="settings-group">
                     <h4 class="settings-group-title">Información</h4>
-                    <div class="settings-item"><span class="settings-icon">ℹ️</span><span class="settings-label">Versión</span><span class="settings-value">1.0.36</span></div>
+                    <div class="settings-item"><span class="settings-icon">ℹ️</span><span class="settings-label">Versión</span><span class="settings-value">1.0.37</span></div>
                     <button id="btn-install-pwa" class="settings-item settings-btn hidden"><span class="settings-icon">📲</span><span class="settings-label">Instalar aplicación</span><span class="settings-arrow">›</span></button>
                     <a href="https://vidasegura-app.web.app/privacy.html" target="_blank" class="settings-item settings-btn" style="text-decoration:none;"><span class="settings-icon">🔒</span><span class="settings-label">Política de Privacidad</span><span class="settings-arrow">›</span></a>
                 </div>
                 <button id="btn-logout" class="btn btn-secondary btn-block" style="margin-bottom:12px;">Cerrar Sesión</button>
                 <button id="btn-delete-account" class="btn btn-danger btn-block">Eliminar Mi Cuenta</button>
-                <p class="settings-footer">VidaSegura v1.0.36<br>Hecho con ❤️ para Venezuela</p>
+                <p class="settings-footer">VidaSegura v1.0.37<br>Hecho con ❤️ para Venezuela</p>
             </div>
         </section>
 
@@ -708,7 +708,7 @@
             <h2>Crear Reporte</h2>
             <p>Selecciona el tipo de evento en tu ubicación actual:</p>
             <div class="form-group">
-                <select id="report-type" class="form-control">
+                <select id="report-type" class="form-select">
                     <option value="robo">Robo / Asalto 🚨</option>
                     <option value="sospechoso">Actividad Sospechosa 👀</option>
                     <option value="accidente">Accidente 💥</option>
@@ -717,7 +717,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <textarea id="report-desc" class="form-control" placeholder="Detalles (opcional)..." rows="3"></textarea>
+                <textarea id="report-desc" class="form-textarea" placeholder="Detalles (opcional)..." rows="3"></textarea>
             </div>
             <div class="modal-actions">
                 <button id="btn-cancel-report" class="btn btn-secondary">Cancelar</button>
