@@ -19,7 +19,7 @@
       "firestore.indexes.json",
       "database.rules.json",
       "storage.rules",
-      "VidaSegura.apk"
+      "*.apk"
     ],
     "rewrites": [
       {

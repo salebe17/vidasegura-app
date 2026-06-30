@@ -25,6 +25,10 @@ window.VidaSegura.Notifications = (function () {
     async function requestPermission() {
         if (isCapacitor) {
             try {
+                var check = await window.Capacitor.Plugins.LocalNotifications.checkPermissions();
+                if (check.display === 'granted') {
+                    return true; // Already granted, no toast needed
+                }
                 var perm = await window.Capacitor.Plugins.LocalNotifications.requestPermissions();
                 if (perm.display === 'granted') {
                     try { App().showToast('Notificaciones activadas', 'success'); } catch (_) {}
