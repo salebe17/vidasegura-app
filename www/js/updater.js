@@ -6,7 +6,7 @@ window.VidaSegura = window.VidaSegura || {};
 window.VidaSegura.Updater = (function () {
     'use strict';
 
-    const APP_VERSION = 'v1.0.33';
+    const APP_VERSION = 'v1.0.34';
     const GITHUB_REPO = 'salebe17/vidasegura-app';
     const API_URL = 'https://api.github.com/repos/' + GITHUB_REPO + '/releases/latest';
 

@@ -12,7 +12,7 @@ window.VidaSegura.Stats = (function () {
     const GPS = () => window.VidaSegura.GPS;
 
     let score = 0;
-    let var newBreakdown = [];
+    let breakdown = [];
 
     // ── Init ──────────────────────────────────────────────────────────────
     function init() {
