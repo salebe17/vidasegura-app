@@ -316,9 +316,10 @@ window.VidaSegura.Map = (function () {
         });
 
         var timeStr = new Date(r.timestamp).toLocaleTimeString();
+        var navBtn = '<div style="margin-top:5px;"><button class="btn btn-sm btn-primary" style="padding:2px 8px; font-size:12px;" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + r.lat + ',' + r.lng + '\', \'_system\')">Navegar hacia allá</button></div>';
         var popupHTML = '<strong>' + r.type.toUpperCase() + '</strong><br>' +
                         '<small>' + timeStr + '</small><br>' +
-                        (r.desc ? '<p>' + _escapeHtml(r.desc) + '</p>' : '');
+                        (r.desc ? '<p>' + _escapeHtml(r.desc) + '</p>' : '') + navBtn;
 
         L.marker([r.lat, r.lng], { icon: divIcon })
          .addTo(map)

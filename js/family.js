@@ -500,7 +500,10 @@ window.VidaSegura.Family = (function () {
 
                 var popupContent = '<strong>' + _escapeHtml(name) + '</strong>' + batteryHtml + '<br>' +
                                    '<small>Últ. actualización: ' + _formatTimestamp(loc.timestamp) + '</small>' +
-                                   '<br><button class="btn btn-sm" style="margin-top:5px; padding:2px 8px; font-size:12px;" onclick="window.VidaSegura.Family.showHistory(\'' + uid + '\')">Ver Historial</button>';
+                                   '<br><div style="display:flex; gap:5px; margin-top:5px;">' +
+                                   '<button class="btn btn-sm" style="flex:1; padding:2px 8px; font-size:12px;" onclick="window.VidaSegura.Family.showHistory(\'' + uid + '\')">Ver Historial</button>' +
+                                   '<button class="btn btn-sm btn-primary" style="flex:1; padding:2px 8px; font-size:12px;" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + loc.lat + ',' + loc.lng + '\', \'_system\')">Navegar</button>' +
+                                   '</div>';
 
                 // Actualizar info en la lista de miembros si existe
                 var memberInfoEl = document.getElementById('member-info-' + uid);

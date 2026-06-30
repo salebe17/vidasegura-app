@@ -831,12 +831,18 @@ window.VidaSegura.App = {
               var timeAgo = (Utils && Utils.timeAgo)
                 ? Utils.timeAgo(alert.timestamp)
                 : '';
+              var navBtn = '';
+              if (alert.location && alert.location.lat && alert.location.lng) {
+                navBtn = '<button class="btn btn-sm btn-primary" style="margin-top:5px; padding:2px 8px; font-size:12px;" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + alert.location.lat + ',' + alert.location.lng + '\', \'_system\')">Navegar hacia allá</button>';
+              }
+              
               return (
                 '<div class="alert-item alert-' + (alert.type || 'info') + '">' +
                   '<span class="alert-icon">' + self._getAlertIcon(alert.type) + '</span>' +
                   '<div class="alert-content">' +
                     '<p class="alert-text">' + safeMsg + '</p>' +
                     '<span class="alert-time">' + timeAgo + '</span>' +
+                    navBtn +
                   '</div>' +
                 '</div>'
               );
