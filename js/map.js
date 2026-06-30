@@ -33,7 +33,29 @@ window.VidaSegura.Map = (function () {
   }
 
   // ──────────────────────────────────────────────
-  // Public API
+  async function showSelfHistory(uid) {
+    try {
+      var map = maps['map-container'];
+      if (!map) return;
+      var locs = await window.VidaSegura.DB.getLocations(24, uid);
+      if (!locs || locs.length < 2) {
+        alert('No hay suficiente historial para mostrar.');
+        return;
+      }
+      var latlngs = locs.map(function(l) { return [l.lat, l.lng]; });
+      if (markers['self-history-line']) {
+        try { map.removeLayer(markers['self-history-line']); } catch(e){}
+      }
+      var polyline = L.polyline(latlngs, {color: '#e74c3c', weight: 4, dashArray: '5, 5'}).addTo(map);
+      markers['self-history-line'] = polyline;
+      map.fitBounds(polyline.getBounds());
+      alert('Mostrando tu historial de las últimas 24 horas.');
+    } catch(e) {
+      console.error('[Map] Error showSelfHistory:', e);
+    }
+  }
+
+  //  Public API 
   // ──────────────────────────────────────────────
 
   /**
@@ -364,7 +386,7 @@ window.VidaSegura.Map = (function () {
       var userMarker = L.marker([pos.lat, pos.lng], { icon: pulsingIcon }).addTo(map);
       var historyBtnHtml = '';
       if (typeof firebaseAuth !== 'undefined' && firebaseAuth.currentUser) {
-        historyBtnHtml = '<br><br><button class="btn btn-sm btn-primary" style="width:100%; margin-top:5px; padding: 4px;" onclick="window.VidaSegura.Family.showHistory(\'' + firebaseAuth.currentUser.uid + '\')">Ver mi historial</button>';
+        historyBtnHtml = '<br><br><button class="btn btn-sm btn-primary" style="width:100%; margin-top:5px; padding: 4px;" onclick="window.VidaSegura.Map.showSelfHistory(\'' + firebaseAuth.currentUser.uid + '\')">Ver mi historial</button>';
       }
       userMarker.bindPopup('<div style="text-align:center;"><strong>Tu ubicación actual</strong>' + historyBtnHtml + '</div>');
       markers['user-location'] = userMarker;
@@ -552,5 +574,6 @@ window.VidaSegura.Map = (function () {
     destroy:            destroy,
     invalidateSize:     invalidateSize,
     initDashboardPreview: initDashboardPreview,
+    showSelfHistory:    showSelfHistory
   };
 })();
