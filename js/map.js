@@ -39,19 +39,29 @@ window.VidaSegura.Map = (function () {
       if (!map) return;
       var locs = await window.VidaSegura.DB.getLocations(24, uid);
       if (!locs || locs.length < 2) {
-        alert('No hay suficiente historial para mostrar.');
+        if (window.VidaSegura.App && window.VidaSegura.App.showToast) {
+          window.VidaSegura.App.showToast('No hay suficiente historial para mostrar.', 'warning');
+        }
         return;
       }
+      
       var latlngs = locs.map(function(l) { return [l.lat, l.lng]; });
       if (markers['self-history-line']) {
         try { map.removeLayer(markers['self-history-line']); } catch(e){}
       }
-      var polyline = L.polyline(latlngs, {color: '#e74c3c', weight: 4, dashArray: '5, 5'}).addTo(map);
+      var polyline = L.polyline(latlngs, {color: '#1a56db', weight: 4, opacity: 0.7}).addTo(map);
+      
       markers['self-history-line'] = polyline;
       map.fitBounds(polyline.getBounds());
-      alert('Mostrando tu historial de las últimas 24 horas.');
+      
+      if (window.VidaSegura.App && window.VidaSegura.App.showToast) {
+        window.VidaSegura.App.showToast('Mostrando tu historial de las últimas 24 horas.', 'info');
+      }
     } catch(e) {
       console.error('[Map] Error showSelfHistory:', e);
+      if (window.VidaSegura.App && window.VidaSegura.App.showToast) {
+        window.VidaSegura.App.showToast('Error al obtener el historial.', 'error');
+      }
     }
   }
 
@@ -270,7 +280,9 @@ window.VidaSegura.Map = (function () {
 
         } catch (e) {
           console.error('[Map] Error enviando reporte:', e);
-          alert('No se pudo enviar el reporte. Verifica tu conexión.');
+          if (window.VidaSegura.App && window.VidaSegura.App.showToast) {
+            window.VidaSegura.App.showToast('No se pudo enviar el reporte. Verifica tu conexión.', 'error');
+          }
         } finally {
           var btn2 = document.getElementById('btn-confirm-report');
           if (btn2) {
