@@ -6,7 +6,7 @@ window.VidaSegura = window.VidaSegura || {};
 window.VidaSegura.Updater = (function () {
     'use strict';
 
-    const APP_VERSION = 'v1.0.40';
+    const APP_VERSION = 'v1.0.41';
     const GITHUB_REPO = 'salebe17/vidasegura-app';
     const API_URL = 'https://api.github.com/repos/' + GITHUB_REPO + '/releases/latest';
 
@@ -20,7 +20,7 @@ window.VidaSegura.Updater = (function () {
         isChecking = true;
         try {
             console.log('[Updater] Checking for updates...');
-            var response = await fetch(API_URL);
+            var response = await fetch(API_URL + '?t=' + new Date().getTime());
             if (!response.ok) throw new Error('API Error');
             var data = await response.json();
             
