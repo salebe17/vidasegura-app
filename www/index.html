@@ -12,8 +12,8 @@
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
     <link rel="apple-touch-icon" href="assets/icon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=46">
-    <link rel="stylesheet" href="css/style.css?v=46">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=47">
+    <link rel="stylesheet" href="css/style.css?v=47">
 </head>
 <body>
     <!-- ===== LOADING SCREEN ===== -->
@@ -110,7 +110,7 @@
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                   <h3 style="margin:0;">Cronolog&iacute;a de Eventos</h3>
                   <button class="btn btn-icon" onclick="window.VidaSegura.Family.toggleTimelinePanel()"><i class="fas fa-times"></i></button>
-              </div>              </div>
+              </div>
               <ul id="tracking-timeline-list" style="list-style:none; padding:0; margin:0; flex:1; overflow-y:auto;">
                   <!-- Timeline items here -->
               </ul>
@@ -705,7 +705,7 @@
                 </div>
                 <button id="btn-logout" class="btn btn-secondary btn-block" style="margin-bottom:12px;">Cerrar Sesión</button>
                 <button id="btn-delete-account" class="btn btn-danger btn-block">Eliminar Mi Cuenta</button>
-                <p class="settings-footer">VidaSegura v1.0.46<br>Hecho con ❤️ para Venezuela</p>
+                <p class="settings-footer">VidaSegura v1.0.47<br>Hecho con ❤️ para Venezuela</p>
             </div>
         </section>
 
@@ -819,35 +819,35 @@
     </nav>
 
     <!-- ===== FIREBASE SDK (compat mode for vanilla JS) ===== -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js?v=46"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js?v=46"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js?v=46"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js?v=46"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js?v=47"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js?v=47"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js?v=47"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js?v=47"></script>
 
     <!-- ===== THIRD PARTY ===== -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=46"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js?v=46"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js?v=46"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=47"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js?v=47"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js?v=47"></script>
 
     <!-- ===== APP SCRIPTS ===== -->
-    <script src="js/firebase-config.js?v=46"></script>
-    <script src="js/utils.js?v=46"></script>
-    <script src="js/db.js?v=46"></script>
-    <script src="js/app.js?v=46"></script>
-    <script src="js/auth.js?v=46"></script>
-    <script src="js/profile.js?v=46"></script>
-    <script src="js/qr.js?v=46"></script>
-    <script src="js/gps.js?v=46"></script>
-    <script src="js/geofence.js?v=46"></script>
-    <script src="js/map.js?v=46"></script>
-    <script src="js/sos.js?v=46"></script>
-    <script src="js/family.js?v=46"></script>
-    <script src="js/chat.js?v=46"></script>
-    <script src="js/alerts.js?v=46"></script>
-    <script src="js/resources.js?v=46"></script>
-    <script src="js/stats.js?v=46"></script>
-    <script src="js/updater.js?v=46"></script>
-    <script src="js/app.js?v=46"></script>
+    <script src="js/firebase-config.js?v=47"></script>
+    <script src="js/utils.js?v=47"></script>
+    <script src="js/db.js?v=47"></script>
+    <script src="js/app.js?v=47"></script>
+    <script src="js/auth.js?v=47"></script>
+    <script src="js/profile.js?v=47"></script>
+    <script src="js/qr.js?v=47"></script>
+    <script src="js/gps.js?v=47"></script>
+    <script src="js/geofence.js?v=47"></script>
+    <script src="js/map.js?v=47"></script>
+    <script src="js/sos.js?v=47"></script>
+    <script src="js/family.js?v=47"></script>
+    <script src="js/chat.js?v=47"></script>
+    <script src="js/alerts.js?v=47"></script>
+    <script src="js/resources.js?v=47"></script>
+    <script src="js/stats.js?v=47"></script>
+    <script src="js/updater.js?v=47"></script>
+    <script src="js/app.js?v=47"></script>
     <script>
         // Init App
         window.addEventListener('load', function() {
@@ -859,6 +859,6 @@
             }
         });
     </script>
-    <script src="js/notifications.js?v=46"></script>
+    <script src="js/notifications.js?v=47"></script>
 </body>
 </html>
