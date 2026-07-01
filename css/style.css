@@ -2099,6 +2099,7 @@ input:checked + .toggle-slider::before {
 }
 .tracking-header {
   padding: 15px;
+  padding-top: max(15px, env(safe-area-inset-top));
   background: rgba(10, 15, 30, 0.9);
   backdrop-filter: blur(10px);
   display: flex;
@@ -2108,6 +2109,7 @@ input:checked + .toggle-slider::before {
 }
 .tracking-controls {
   padding: 15px;
+  padding-bottom: max(15px, env(safe-area-inset-bottom));
   background: rgba(10, 15, 30, 0.9);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -2146,7 +2148,7 @@ input:checked + .toggle-slider::before {
 #tracking-panel {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 10001;
   background: #0F172A;
   display: flex;
   flex-direction: column;
