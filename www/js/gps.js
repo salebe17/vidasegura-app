@@ -43,6 +43,7 @@ window.VidaSegura.GPS = (function () {
       accuracy:  pos.coords.accuracy,
       altitude:  pos.coords.altitude  || null,
       speed:     pos.coords.speed     || null,
+      heading:   pos.coords.heading   || null,
       timestamp: pos.timestamp || Date.now(),
     };
   }
@@ -122,6 +123,7 @@ window.VidaSegura.GPS = (function () {
       accuracy:  posObj.accuracy  || null,
       altitude:  posObj.altitude  || null,
       speed:     posObj.speed     || null,
+      heading:   posObj.heading   || null,
       timestamp: posObj.timestamp || Date.now(),
       online:    true,
       battery:   batteryLvl,
@@ -133,18 +135,70 @@ window.VidaSegura.GPS = (function () {
     });
 
     // 2. Historial (append con push)
-    var historyRef = realtimeDb.ref('users/' + uid + '/locationHistory');
     var historyData = {
       lat:       posObj.lat,
       lng:       posObj.lng,
       accuracy:  posObj.accuracy || null,
+      altitude:  posObj.altitude || null,
+      speed:     posObj.speed || null,
+      heading:   posObj.heading || null,
+      battery:   batteryLvl,
+      charging:  charging,
       timestamp: posObj.timestamp || Date.now(),
     };
 
-    historyRef.push(historyData).catch(function (err) {
-      console.error('[GPS] Error escribiendo historial de ubicación a RTDB:', err);
-    });
+    if (navigator.onLine) {
+      // Subir directo
+      var historyRef = realtimeDb.ref('users/' + uid + '/locationHistory');
+      historyRef.push(historyData).catch(function (err) {
+        console.error('[GPS] Error escribiendo historial a RTDB:', err);
+        _queueOfflineLocation(historyData);
+      });
+      // Intentar sincronizar lo pendiente
+      syncOfflineLocations();
+    } else {
+      // Guardar local
+      _queueOfflineLocation(historyData);
+    }
   }
+
+  function _queueOfflineLocation(data) {
+    try {
+      var queue = JSON.parse(localStorage.getItem('vs_offline_locations') || '[]');
+      queue.push(data);
+      // Limitar el tamaño a unas 2000 ubicaciones (~2-4 dias)
+      if (queue.length > 2000) queue = queue.slice(-2000);
+      localStorage.setItem('vs_offline_locations', JSON.stringify(queue));
+    } catch(e) { console.warn('[GPS] Error guardando offline', e); }
+  }
+
+  async function syncOfflineLocations() {
+    var uid = getUid();
+    if (!uid || !navigator.onLine) return;
+    try {
+      var queue = JSON.parse(localStorage.getItem('vs_offline_locations') || '[]');
+      if (queue.length === 0) return;
+      
+      var historyRef = realtimeDb.ref('users/' + uid + '/locationHistory');
+      
+      // Batch update is not natively array push in RTDB, we must push individually or create a big update object.
+      // Since RTDB push creates a unique key, we can do it via a bulk update:
+      var updates = {};
+      queue.forEach(function(loc) {
+        var newKey = historyRef.push().key;
+        updates[newKey] = loc;
+      });
+      
+      await historyRef.update(updates);
+      localStorage.removeItem('vs_offline_locations');
+      console.log('[GPS] Sincronizados', queue.length, 'puntos offline.');
+    } catch(e) {
+      console.warn('[GPS] Error sincronizando offline:', e);
+    }
+  }
+
+  // Escuchar cuando vuelva internet para sincronizar rápido
+  window.addEventListener('online', syncOfflineLocations);
 
   /**
    * Dispara todos los callbacks registrados con la posición más reciente.

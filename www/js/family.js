@@ -899,30 +899,263 @@ window.VidaSegura.Family = (function () {
         }
     }
 
-    // ── Historial de Rutas ────────────────────────────────────────────────────────
+        // ----------------------------------------------
+    // Historial de Rutas (Panel Avanzado)
+    // ----------------------------------------------
+    var trackingMap = null;
+    var trackingPolyline = null;
+    var trackingMarker = null;
+    var trackingLocations = [];
+    var trackingPlayInterval = null;
+    var trackingUid = null;
+    var trackingExtraLayers = null;
 
     async function showHistory(uid) {
         try {
-            var locs = await window.VidaSegura.DB.getLocations(24, uid);
+            trackingUid = uid;
+            var range = parseInt(document.getElementById("tracking-time-range").value) || 24;
+            document.getElementById("tracking-panel").classList.remove("hidden");
+            document.getElementById("tracking-subtitle").innerText = "Cargando datos...";
+            
+            if (!trackingMap) {
+                trackingMap = L.map("tracking-map", { zoomControl: false }).setView([0, 0], 2);
+                trackingExtraLayers = L.layerGroup().addTo(trackingMap);
+                L.control.zoom({ position: 'topright' }).addTo(trackingMap);
+                var cartoLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+                    maxZoom: 19
+                });
+                var satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+                    maxZoom: 19,
+                    attribution: 'Tiles &copy; Esri'
+                });
+                cartoLayer.addTo(trackingMap);
+                L.control.layers({
+                    "Mapa Estándar": cartoLayer,
+                    "Satélite": satLayer
+                }).addTo(trackingMap);
+            }
+            
+            setTimeout(function(){ trackingMap.invalidateSize(); }, 300);
+
+            var locs = await window.VidaSegura.DB.getLocations(range, uid);
             if (!locs || locs.length < 2) {
-                alert('No hay suficiente historial para este usuario.');
+                document.getElementById("tracking-subtitle").innerText = "No hay suficiente historial en este rango.";
+                if (trackingPolyline) { trackingMap.removeLayer(trackingPolyline); trackingPolyline = null; }
+                if (trackingMarker) { trackingMap.removeLayer(trackingMarker); trackingMarker = null; }
+                trackingLocations = [];
                 return;
             }
 
-            var latlngs = locs.map(function(l) { return [l.lat, l.lng]; });
-            var polyline = L.polyline(latlngs, {color: '#3498db', weight: 4, dashArray: '5, 5'}).addTo(familyMap);
-            familyMap.fitBounds(polyline.getBounds());
+            // locs is newest-first, reverse to oldest-first for timeline
+            trackingLocations = locs.reverse();
+            drawTrackingRoute();
             
-            alert('Mostrando historial de las últimas 24 horas.');
-            
-            // To clear the polyline later, we could store it, but for simplicity we just render it.
         } catch (e) {
-            console.error('[Family] Error showHistory:', e);
+            console.error("[Family] Error showHistory:", e);
         }
     }
 
-    // ── Public API ──────────────────────────────────────────────────────
-    return {
+    async function drawTrackingRoute() {
+        if (trackingPolyline) trackingMap.removeLayer(trackingPolyline);
+        if (trackingMarker) trackingMap.removeLayer(trackingMarker);
+        if (trackingExtraLayers) trackingExtraLayers.clearLayers();
+        
+        document.getElementById("tracking-subtitle").innerText = "Procesando datos (Analizando " + trackingLocations.length + " puntos)...";
+        
+        var latlngs = [];
+        var stops = [];
+        var eventsHtml = "";
+        
+        // Detecci�n de paradas y tramos
+        var i = 0;
+        while (i < trackingLocations.length) {
+            var startLoc = trackingLocations[i];
+            latlngs.push([startLoc.lat, startLoc.lng]);
+            
+            // Detect signal loss > 15 mins (900000 ms) with previous point
+            if (i > 0) {
+                var prevLoc = trackingLocations[i - 1];
+                var timeDiff = startLoc.timestamp - prevLoc.timestamp;
+                if (timeDiff > 900000) {
+                    // Signal loss! Draw dotted line
+                    L.polyline([[prevLoc.lat, prevLoc.lng], [startLoc.lat, startLoc.lng]], {
+                        color: "#ef4444", weight: 3, dashArray: "10, 10"
+                    }).addTo(trackingExtraLayers);
+                }
+            }
+
+            var j = i + 1;
+            while (j < trackingLocations.length) {
+                var currLoc = trackingLocations[j];
+                var dist = L.latLng(startLoc.lat, startLoc.lng).distanceTo(L.latLng(currLoc.lat, currLoc.lng));
+                if (dist > 50) {
+                    break;
+                }
+                j++;
+            }
+            
+            var endLoc = trackingLocations[j - 1];
+            var durationMinutes = (endLoc.timestamp - startLoc.timestamp) / (1000 * 60);
+            
+            if (durationMinutes >= 5) {
+                stops.push({
+                    lat: startLoc.lat,
+                    lng: startLoc.lng,
+                    startTime: startLoc.timestamp,
+                    endTime: endLoc.timestamp,
+                    duration: durationMinutes
+                });
+                
+                var stopIcon = L.divIcon({ html: "<div style=\"background:#f59e0b; width:12px; height:12px; border-radius:50%; border:2px solid white;\"></div>", className: "stop-icon", iconSize: [12,12], iconAnchor: [6,6] });
+                L.marker([startLoc.lat, startLoc.lng], {icon: stopIcon}).addTo(trackingExtraLayers)
+                 .bindPopup("<b>Parada</b><br>" + Math.round(durationMinutes) + " minutos");
+                 
+                // Skip the inner points for the main polyline to keep it clean, or keep them. Let s keep them but advance i.
+                for(var k=i+1; k<j; k++) latlngs.push([trackingLocations[k].lat, trackingLocations[k].lng]);
+            }
+            
+            i = j;
+        }
+        
+        trackingPolyline = L.polyline(latlngs, {color: "#3b82f6", weight: 4}).addTo(trackingMap);
+        if (latlngs.length > 0) trackingMap.fitBounds(trackingPolyline.getBounds());
+        
+        var slider = document.getElementById("tracking-slider");
+        slider.max = trackingLocations.length - 1;
+        slider.value = trackingLocations.length - 1;
+        
+        
+        document.getElementById("tracking-subtitle").innerText = trackingLocations.length + " puntos | " + stops.length + " paradas";
+        
+        // Generate Timeline HTML
+        var timelineList = document.getElementById("tracking-timeline-list");
+        if (timelineList) {
+            eventsHtml = "";
+            
+            // Start
+            if (trackingLocations.length > 0) {
+                var first = trackingLocations[0];
+                eventsHtml += "<li style=\"padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);\">?? <b>" + new Date(first.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) + "</b> - Inicia Ruta</li>";
+            }
+            
+            // Stops
+            stops.forEach(function(s) {
+                var startStr = new Date(s.startTime).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+                var endStr = new Date(s.endTime).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+                eventsHtml += "<li style=\"padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);\">?? <b>" + startStr + " a " + endStr + "</b> - Detenido (" + Math.round(s.duration) + " mins) en <span class=\"stop-address\" data-lat=\"" + s.lat + "\" data-lng=\"" + s.lng + "\">Calculando...</span></li>";
+            });
+            
+            // End
+            if (trackingLocations.length > 1) {
+                var last = trackingLocations[trackingLocations.length - 1];
+                eventsHtml += "<li style=\"padding:10px;\">?? <b>" + new Date(last.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) + "</b> - �ltima ubicaci�n conocida</li>";
+            }
+            
+            timelineList.innerHTML = eventsHtml;
+            
+            // Reverse Geocode the stops
+            setTimeout(function() {
+                var els = document.querySelectorAll(".stop-address");
+                els.forEach(function(el) {
+                    var lat = el.getAttribute("data-lat");
+                    var lng = el.getAttribute("data-lng");
+                    fetch("https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lng + "&format=json")
+                    .then(r => r.json())
+                    .then(data => {
+                        el.innerText = data.display_name.split(",").slice(0,2).join(",");
+                    }).catch(e => el.innerText = "Ubicaci�n desconocida");
+                });
+            }, 100);
+        }
+
+        
+        updateTrackingMarker(trackingLocations.length - 1);
+        
+        // Reverse Geocoding for last location asynchronously
+        if (trackingLocations.length > 0) {
+            var lastLoc = trackingLocations[trackingLocations.length - 1];
+            fetch("https://nominatim.openstreetmap.org/reverse?lat=" + lastLoc.lat + "&lon=" + lastLoc.lng + "&format=json")
+            .then(r => r.json())
+            .then(data => {
+                var address = data.display_name.split(",").slice(0,2).join(",");
+                document.getElementById("tracking-subtitle").innerText += " | " + address;
+            }).catch(e => console.log("Geocoding failed"));
+        }
+    }
+
+    function updateTrackingMarker(index) {
+        var loc = trackingLocations[index];
+        if (!loc) return;
+        
+        var latlng = [loc.lat, loc.lng];
+        if (!trackingMarker) {
+            var iconHtml = "<div style=\"background:#3b82f6; width:16px; height:16px; border-radius:50%; border:2px solid white; box-shadow:0 0 5px rgba(0,0,0,0.5);\"></div>";
+            var divIcon = L.divIcon({ html: iconHtml, className: "tracking-point-icon", iconSize: [16,16], iconAnchor: [8,8] });
+            trackingMarker = L.marker(latlng, {icon: divIcon}).addTo(trackingMap);
+        } else {
+            trackingMarker.setLatLng(latlng);
+        }
+        
+        var timeStr = new Date(loc.timestamp).toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"});
+        document.getElementById("tracking-time-label").innerText = timeStr;
+        
+        var battery = loc.battery !== undefined && loc.battery !== null ? loc.battery + "%" : "--";
+        var speed = loc.speed !== undefined && loc.speed !== null ? (loc.speed * 3.6).toFixed(1) + " km/h" : "--";
+        
+        document.getElementById("tracking-stats").innerHTML = "<span><i class=\"fas fa-battery-half\"></i> " + battery + "</span><span><i class=\"fas fa-tachometer-alt\"></i> " + speed + "</span>";
+    }
+
+    function onSliderInput() {
+        var val = parseInt(document.getElementById("tracking-slider").value);
+        updateTrackingMarker(val);
+    }
+
+    function onSliderChange() {
+        var val = parseInt(document.getElementById("tracking-slider").value);
+        if (trackingLocations[val]) {
+            trackingMap.panTo([trackingLocations[val].lat, trackingLocations[val].lng]);
+        }
+    }
+
+    function toggleTrackingPlay() {
+        var icon = document.getElementById("icon-play-tracking");
+        if (trackingPlayInterval) {
+            clearInterval(trackingPlayInterval);
+            trackingPlayInterval = null;
+            icon.className = "fas fa-play";
+        } else {
+            icon.className = "fas fa-pause";
+            var slider = document.getElementById("tracking-slider");
+            trackingPlayInterval = setInterval(function() {
+                var val = parseInt(slider.value);
+                if (val >= trackingLocations.length - 1) {
+                    slider.value = 0;
+                } else {
+                    slider.value = val + 1;
+                }
+                onSliderInput();
+                if (slider.value % 5 === 0) onSliderChange();
+            }, 500);
+        }
+    }
+
+    
+    function toggleTimelinePanel() {
+        var panel = document.getElementById("tracking-timeline-panel");
+        if (panel) panel.classList.toggle("hidden");
+    }
+    
+    function closeTrackingPanel() {
+        if (trackingPlayInterval) toggleTrackingPlay();
+        document.getElementById("tracking-panel").classList.add("hidden");
+    }
+
+    function changeTrackingRange(range) {
+        if (trackingUid) showHistory(trackingUid);
+    }
+
+      // Public API
+      return {
         init: init,
         createCircle: createCircle,
         joinCircle: joinCircle,
@@ -930,6 +1163,12 @@ window.VidaSegura.Family = (function () {
         renderCircles: renderCircles,
         showCircleDetail: showCircleDetail,
         showHistory: showHistory,
+        toggleTimelinePanel: toggleTimelinePanel,
+        closeTrackingPanel: closeTrackingPanel,
+        changeTrackingRange: changeTrackingRange,
+        toggleTrackingPlay: toggleTrackingPlay,
+        onSliderInput: onSliderInput,
+        onSliderChange: onSliderChange,
         deletePlace: deletePlace
     };
 })();
