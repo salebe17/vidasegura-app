@@ -51,6 +51,42 @@
         </div>
     </div>
 
+    <!-- ===== TRACKING PANEL MODAL ===== -->
+    <div id="tracking-panel" class="modal-overlay hidden">
+        <div class="tracking-container">
+            <div class="tracking-header">
+                <button class="btn btn-icon" onclick="window.VidaSegura.Family.closeTrackingPanel()" style="padding:4px; margin-right:10px;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div style="flex:1;">
+                    <h3 id="tracking-title" style="margin:0; font-size:16px;">Historial de Ruta</h3>
+                    <small id="tracking-subtitle" style="opacity:0.7;">Calculando...</small>
+                </div>
+                <select id="tracking-time-range" class="glass-select" onchange="window.VidaSegura.Family.changeTrackingRange(this.value)">
+                    <option value="3">Últimas 3h</option>
+                    <option value="12">Últimas 12h</option>
+                    <option value="24" selected>Últimas 24h</option>
+                    <option value="48">Últimas 48h</option>
+                </select>
+            </div>
+            
+            <div id="tracking-map" style="flex:1; width:100%; z-index:1;"></div>
+            
+            <div class="tracking-controls">
+                <div class="tracking-stats" id="tracking-stats">
+                    <!-- Dinámico: Batería, Velocidad -->
+                </div>
+                <div class="timeline-container">
+                    <button class="btn btn-icon" id="btn-play-tracking" onclick="window.VidaSegura.Family.toggleTrackingPlay()">
+                        <i class="fas fa-play" id="icon-play-tracking"></i>
+                    </button>
+                    <input type="range" id="tracking-slider" min="0" max="100" value="100" step="1" oninput="window.VidaSegura.Family.onSliderInput()" onchange="window.VidaSegura.Family.onSliderChange()">
+                    <span id="tracking-time-label" style="font-size:12px; width:50px; text-align:right;">00:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== PROMINENT DISCLOSURE MODAL ===== -->
     <div id="modal-disclosure-overlay" class="hidden">
         <div id="modal-disclosure-box" class="glass-card" style="text-align: center;">
@@ -638,7 +674,7 @@
                 </div>
                 <button id="btn-logout" class="btn btn-secondary btn-block" style="margin-bottom:12px;">Cerrar Sesión</button>
                 <button id="btn-delete-account" class="btn btn-danger btn-block">Eliminar Mi Cuenta</button>
-                <p class="settings-footer">VidaSegura v1.0.41<br>Hecho con ❤️ para Venezuela</p>
+                <p class="settings-footer">VidaSegura v1.0.42<br>Hecho con ❤️ para Venezuela</p>
             </div>
         </section>
 

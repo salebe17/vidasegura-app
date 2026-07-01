@@ -3,7 +3,7 @@
 // Cache-first para assets, Network-first para API
 // ============================================
 
-const CACHE_NAME = 'vidasegura-v7';
+const CACHE_NAME = 'vidasegura-v8';
 
 const urlsToCache = [
   '/',
