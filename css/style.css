@@ -2141,3 +2141,13 @@ input:checked + .toggle-slider::before {
 }
 
 
+
+
+#tracking-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0F172A;
+  display: flex;
+  flex-direction: column;
+}
