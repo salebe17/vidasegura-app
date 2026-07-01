@@ -3,39 +3,39 @@
 // Cache-first para assets, Network-first para API
 // ============================================
 
-const CACHE_NAME = 'vidasegura-v15';
+const CACHE_NAME = 'vidasegura-v16';
 
 const urlsToCache = [
   '/',
   '/index.html',
-  '/css/style.css?v=47',
+  '/css/style.css?v=48',
   '/manifest.json',
-  '/js/app.js?v=47',
-  '/js/auth.js?v=47',
-  '/js/db.js?v=47',
-  '/js/geofence.js?v=47',
-  '/js/map.js?v=47',
-  '/js/sos.js?v=47',
-  '/js/profile.js?v=47',
-  '/js/family.js?v=47',
-  '/js/chat.js?v=47',
-  '/js/alerts.js?v=47',
-  '/js/resources.js?v=47',
-  '/js/qr.js?v=47',
-  '/js/utils.js?v=47',
-  '/js/gps.js?v=47',
-  '/js/stats.js?v=47',
-  '/js/notifications.js?v=47',
+  '/js/app.js?v=48',
+  '/js/auth.js?v=48',
+  '/js/db.js?v=48',
+  '/js/geofence.js?v=48',
+  '/js/map.js?v=48',
+  '/js/sos.js?v=48',
+  '/js/profile.js?v=48',
+  '/js/family.js?v=48',
+  '/js/chat.js?v=48',
+  '/js/alerts.js?v=48',
+  '/js/resources.js?v=48',
+  '/js/qr.js?v=48',
+  '/js/utils.js?v=48',
+  '/js/gps.js?v=48',
+  '/js/stats.js?v=48',
+  '/js/notifications.js?v=48',
   '/data/hospitals-vzla.json',
   '/data/emergency-protocols.json',
   '/assets/icon.svg',
   // CDN - Leaflet
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=47',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=47',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=48',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=48',
   // CDN - QRCode
-  'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js?v=47',
+  'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js?v=48',
   // CDN - HTML5 QR Scanner
-  'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js?v=47',
+  'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js?v=48',
   // Google Fonts
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap'
 ];
