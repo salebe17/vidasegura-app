@@ -1035,20 +1035,20 @@ window.VidaSegura.Family = (function () {
             // Start
             if (trackingLocations.length > 0) {
                 var first = trackingLocations[0];
-                eventsHtml += "<li style=\"padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);\">?? <b>" + new Date(first.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) + "</b> - Inicia Ruta</li>";
+                eventsHtml += "<li style=\"padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);\">&#128994; <b>" + new Date(first.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) + "</b> - Inicia Ruta</li>";
             }
             
             // Stops
             stops.forEach(function(s) {
                 var startStr = new Date(s.startTime).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
                 var endStr = new Date(s.endTime).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-                eventsHtml += "<li style=\"padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);\">?? <b>" + startStr + " a " + endStr + "</b> - Detenido (" + Math.round(s.duration) + " mins) en <span class=\"stop-address\" data-lat=\"" + s.lat + "\" data-lng=\"" + s.lng + "\">Calculando...</span></li>";
+                eventsHtml += "<li style=\"padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);\">&#128689; <b>" + startStr + " a " + endStr + "</b> - Detenido (" + Math.round(s.duration) + " mins) en <span class=\"stop-address\" data-lat=\"" + s.lat + "\" data-lng=\"" + s.lng + "\">Calculando...</span></li>";
             });
             
             // End
             if (trackingLocations.length > 1) {
                 var last = trackingLocations[trackingLocations.length - 1];
-                eventsHtml += "<li style=\"padding:10px;\">?? <b>" + new Date(last.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) + "</b> - �ltima ubicaci�n conocida</li>";
+                eventsHtml += "<li style=\"padding:10px;\">&#128205; <b>" + new Date(last.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) + "</b> - &Uacute;ltima ubicaci&oacute;n conocida</li>";
             }
             
             timelineList.innerHTML = eventsHtml;
@@ -1063,7 +1063,7 @@ window.VidaSegura.Family = (function () {
                     .then(r => r.json())
                     .then(data => {
                         el.innerText = data.display_name.split(",").slice(0,2).join(",");
-                    }).catch(e => el.innerText = "Ubicaci�n desconocida");
+                    }).catch(e => el.innerText = "Ubicaci&oacute;n desconocida");
                 });
             }, 100);
         }
